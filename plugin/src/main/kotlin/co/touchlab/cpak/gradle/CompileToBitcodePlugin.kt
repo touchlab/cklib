@@ -12,14 +12,11 @@ package co.touchlab.cpak.gradle
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.provider.Provider
-import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
-import org.jetbrains.kotlin.gradle.plugin.SubpluginArtifact
-import org.jetbrains.kotlin.gradle.plugin.SubpluginOption
 
 class CompileToBitcodePlugin : Plugin<Project> {
     override fun apply(target: Project) = with(target) {
         extensions.create(EXTENSION_NAME, CompileToBitcodeExtension::class.java, target)
+        extensions.create(CPAK_EXTENSION_NAME, CpakGradleExtension::class.java, target)
 
 //        project.logger.warn("compile apply")
         afterEvaluate {
@@ -34,6 +31,7 @@ class CompileToBitcodePlugin : Plugin<Project> {
 
     companion object {
         const val EXTENSION_NAME = "bitcode"
+        const val CPAK_EXTENSION_NAME = "cpak"
         const val COMPILATION_DATABASE_TASK_NAME = "CompilationDatabase"
     }
 }

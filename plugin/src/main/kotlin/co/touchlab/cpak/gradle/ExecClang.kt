@@ -19,8 +19,7 @@ import java.io.File
 
 class ExecClang(private val project: Project) {
 
-    private val platformManager =
-        org.jetbrains.kotlin.konan.target.PlatformManager(org.jetbrains.kotlin.konan.target.Distribution("/Users/kgalligan/.konan/kotlin-native-prebuilt-macos-x86_64-1.5.30"))
+    private val platformManager = project.platformManager
 
     private fun clangArgsForCppRuntime(target: org.jetbrains.kotlin.konan.target.KonanTarget): List<String> {
         return platformManager.platform(target).clang.clangArgsForKonanSources.asList()

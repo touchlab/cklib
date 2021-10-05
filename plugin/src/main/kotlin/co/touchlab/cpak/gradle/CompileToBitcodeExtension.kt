@@ -32,8 +32,7 @@ open class CompileToBitcodeExtension @Inject constructor(val project: Project) {
 
 //        project.logger.warn("create called ${name}, src dir ${srcDir.absolutePath}")
 
-        val platformManager =
-            org.jetbrains.kotlin.konan.target.PlatformManager(org.jetbrains.kotlin.konan.target.Distribution("/Users/kgalligan/.konan/kotlin-native-prebuilt-macos-x86_64-1.5.30"))
+        val platformManager = project.platformManager
 
         targetList.forEach { targetName ->
 

@@ -17,7 +17,7 @@ import java.io.File
 import javax.inject.Inject
 
 open class CompileToBitcode @Inject constructor(
-    srcRoot: java.io.File,
+    srcRoot: File,
     @Input val folderName: String,
     @Input val target: String,
     @Input val outputGroup: String
@@ -174,11 +174,9 @@ open class CompileToBitcode @Inject constructor(
         }
 
         project.exec {
-            val platformManager =
-                org.jetbrains.kotlin.konan.target.PlatformManager(org.jetbrains.kotlin.konan.target.Distribution("/Users/kgalligan/.konan/kotlin-native-prebuilt-macos-x86_64-1.5.30"))
 
 //            val llvmDir = platformManager.hostPlatform.llvmHome//"abc"///*platformManager.hostPlatform.llvmHome*/project.findProperty("llvmDir")
-            val llvmDir = "/Users/kgalligan/.konan/dependencies/clang-llvm-apple-8.0.0-darwin-macos"
+            val llvmDir = project.llvmHome
             it.executable = "$llvmDir/bin/llvm-link"
             it.args = listOf("-o", outFile.absolutePath) + linkerArgs +
                     inputFiles.map {

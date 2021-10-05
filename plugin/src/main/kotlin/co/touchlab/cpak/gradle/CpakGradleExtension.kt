@@ -10,6 +10,20 @@
 
 package co.touchlab.cpak.gradle
 
-open class CpakGradleExtension{
+import org.gradle.api.Project
+import org.jetbrains.kotlin.konan.target.Distribution
+import org.jetbrains.kotlin.konan.target.PlatformManager
 
+open class CpakGradleExtension{
+    var konanHome: String = "${System.getProperty("user.home")}/.konan/kotlin-native-prebuilt-macos-x86_64-1.5.30"
+    var llvmHome: String = "${System.getProperty("user.home")}/.konan/dependencies/clang-llvm-apple-8.0.0-darwin-macos"
 }
+
+internal val Project.platformManager: PlatformManager
+    get() {
+        val cpakExtension = extensions.getByType(CpakGradleExtension::class.java)
+        return PlatformManager(Distribution(cpakExtension.konanHome))
+    }
+
+internal val Project.llvmHome: String
+    get() = extensions.getByType(CpakGradleExtension::class.java).llvmHome
