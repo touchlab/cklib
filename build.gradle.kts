@@ -12,7 +12,7 @@
  */
 
 buildscript {
-    extra["kotlin_plugin_id"] = "co.touchlab.cpak"
+    extra["kotlin_plugin_id"] = "co.touchlab.cklib"
     dependencies {
         classpath("com.vanniktech:gradle-maven-publish-plugin:0.18.0")
     }

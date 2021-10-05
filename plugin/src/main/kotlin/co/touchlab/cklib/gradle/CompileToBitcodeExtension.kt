@@ -8,7 +8,7 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 
-package co.touchlab.cpak.gradle
+package co.touchlab.cklib.gradle
 
 import org.gradle.api.Project
 import javax.inject.Inject
@@ -39,23 +39,26 @@ open class CompileToBitcodeExtension @Inject constructor(val project: Project) {
         outputGroup: String = "main",
         configurationBlock: CompileToBitcode.() -> Unit = {}
     ) {
-        project.tasks.register("bitcodeAll${name.snakeCaseToCamelCase().capitalize()}") {
+        val allBitcode = project.tasks.register("all${name.snakeCaseToCamelCase().capitalize()}") {
             it.group = GROUP_NAME
             it.description = "Compiles '$name' to bitcode for all targets"
-        }
-        targetList.forEach { targetName ->
+        }.get()
+        val allTaskProviders = targetList.map { targetName ->
             val taskName = "${targetName}${name.snakeCaseToCamelCase().capitalize()}"
             project.logger.warn("taskName $taskName")
-            project.tasks.register(
+            val taskProvider = project.tasks.register(
                 taskName,
                 CompileToBitcode::class.java,
                 srcDir, name, targetName, outputGroup
-            ).configure {
+            )
+            taskProvider.configure {
                 it.group = GROUP_NAME
                 it.description = "Compiles '$name' to bitcode for $targetName"
                 it.configurationBlock()
             }
+            taskProvider
         }
+        allBitcode.dependsOn(allTaskProviders)
     }
 
     companion object {

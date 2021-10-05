@@ -8,7 +8,7 @@
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  */
 
-package co.touchlab.cpak.gradle
+package co.touchlab.cklib.gradle
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -16,7 +16,7 @@ import org.gradle.api.Project
 class CompileToBitcodePlugin : Plugin<Project> {
     override fun apply(target: Project) = with(target) {
         extensions.create(EXTENSION_NAME, CompileToBitcodeExtension::class.java, target)
-        extensions.create(CPAK_EXTENSION_NAME, CpakGradleExtension::class.java, target)
+        extensions.create(CKLIB_EXTENSION_NAME, CKlibGradleExtension::class.java, target)
 
         afterEvaluate {
             // TODO: Support providers (https://docs.gradle.org/current/userguide/lazy_configuration.html)
@@ -30,7 +30,7 @@ class CompileToBitcodePlugin : Plugin<Project> {
 
     companion object {
         const val EXTENSION_NAME = "bitcode"
-        const val CPAK_EXTENSION_NAME = "cpak"
+        const val CKLIB_EXTENSION_NAME = "cklib"
         const val COMPILATION_DATABASE_TASK_NAME = "CompilationDatabase"
     }
 }
