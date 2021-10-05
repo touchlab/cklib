@@ -14,7 +14,7 @@ import org.gradle.api.Project
 import javax.inject.Inject
 
 open class CompileToBitcodeExtension @Inject constructor(val project: Project) {
-
+/*
     private val targetList = listOf(
         "linux_x64",
         "macos_x64",
@@ -31,10 +31,11 @@ open class CompileToBitcodeExtension @Inject constructor(val project: Project) {
         "tvos_x64",
         "tvos_simulator_arm64",
         "macos_arm64"
-    )
+    )*/
 
     fun create(
         name: String,
+        targets: List<String>,
         srcDir: java.io.File = project.file("src/$name"),
         outputGroup: String = "main",
         configurationBlock: CompileToBitcode.() -> Unit = {}
@@ -43,7 +44,7 @@ open class CompileToBitcodeExtension @Inject constructor(val project: Project) {
             it.group = GROUP_NAME
             it.description = "Compiles '$name' to bitcode for all targets"
         }.get()
-        val allTaskProviders = targetList.map { targetName ->
+        val allTaskProviders = targets.map { targetName ->
             val taskName = "${targetName}${name.snakeCaseToCamelCase().capitalize()}"
             project.logger.warn("taskName $taskName")
             val taskProvider = project.tasks.register(
