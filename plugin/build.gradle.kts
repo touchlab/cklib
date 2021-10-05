@@ -1,6 +1,6 @@
 import com.android.build.gradle.internal.tasks.factory.dependsOn
 import com.github.jengelman.gradle.plugins.shadow.tasks.ConfigureShadowRelocation
-import org.jetbrains.kotlin.utils.addToStdlib.cast
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
   id("java-gradle-plugin")
@@ -12,23 +12,68 @@ plugins {
 }
 
 
-
-//val bigJar by configurations.creating {
-////  extendsFrom(configurations.implementation.get())
-//}
-
-//dependencies {
-//  testImplementation("junit:junit:4.13")
-//  smokeTest("org.apache.httpcomponents:httpclient:4.5.5")
-//}
-
 dependencies {
-  shadow(kotlin("gradle-plugin-api"))
+//  implementation(kotlin("gradle-plugin-api"))
+  shadow(gradleApi())
   implementation(fileTree("lib") { include("*.jar") })
-//  bigJar(fileTree("lib") { include("*.jar") })
   implementation(fileTree("${System.getProperty("user.home")}/.konan/kotlin-native-prebuilt-macos-x86_64-1.5.30/konan/lib") { include("*.jar") })
-//  bigJar(fileTree("${System.getProperty("user.home")}/.konan/kotlin-native-prebuilt-macos-x86_64-1.5.30/konan/lib") { include("*.jar") })
 }
+
+val shadowJarTask = tasks.shadowJar
+
+// Add shadow jar to the Gradle module metadata api and runtime configurations
+configurations {
+  artifacts {
+    runtimeElements(shadowJarTask)
+    apiElements(shadowJarTask)
+  }
+}
+
+tasks.whenTaskAdded {
+  if (name == "publishPluginJar" || name == "generateMetadataFileForPluginMavenPublication") {
+    dependsOn(tasks.named("shadowJar"))
+  }
+}
+
+// Disabling default jar task as it is overridden by shadowJar
+tasks.named("jar").configure {
+  enabled = false
+}
+
+// Need to move publishing configuration into afterEvaluate {}
+// to override changes done by "com.gradle.plugin-publish" plugin in afterEvaluate {} block
+// See PublishPlugin class for details
+afterEvaluate {
+  publishing {
+    publications {
+      withType<MavenPublication> {
+        // Special workaround to publish shadow jar instead of normal one. Name to override peeked here:
+        // https://github.com/gradle/gradle/blob/master/subprojects/plugin-development/src/main/java/org/gradle/plugin/devel/plugins/MavenPluginPublishPlugin.java#L73
+        if (name == "pluginMaven") {
+          setArtifacts(
+            listOf(
+              shadowJarTask.get()
+            )
+          )
+        }
+      }
+    }
+  }
+}
+
+/*val relocateShadowJar = tasks.register<ConfigureShadowRelocation>("relocateShadowJar")
+val shadowJarTask = tasks.named<ShadowJar>("shadowJar") {
+  // Enable package relocation in resulting shadow jar
+  relocateShadowJar.get().apply {
+    prefix = "$pluginGroup.shadow"
+    target = this@named
+  }
+
+  dependsOn(relocateShadowJar)
+  minimize()
+  archiveClassifier.set("")
+  configurations = listOf(shadowImplementation)
+}*/
 
 //tasks.shadowJar {
 //  configurations = listOf(bigJar)

@@ -46,10 +46,10 @@ open class CompileToBitcode @Inject constructor(
     )
 
     // Source files and headers are registered as inputs by the `inputFiles` and `headers` properties.
-    @InputDirectory
+    @InputFiles
     var srcDirs: FileCollection = project.files(srcRoot.resolve("cpp"))
 
-    @InputDirectory
+    @InputFiles
     var headersDirs: FileCollection = srcDirs + project.files(srcRoot.resolve("headers"))
 
     @Input
@@ -68,7 +68,7 @@ open class CompileToBitcode @Inject constructor(
             return project.buildDir.resolve("bitcode/$outputGroup/$target$sanitizerSuffix")
         }
 
-    @get:InputDirectory
+    @get:OutputDirectory
     val objDir
         get() = File(targetDir, folderName)
 

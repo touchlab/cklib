@@ -13,8 +13,9 @@ package co.touchlab.cpak.gradle
 import org.gradle.api.Project
 import org.jetbrains.kotlin.konan.target.Distribution
 import org.jetbrains.kotlin.konan.target.PlatformManager
+import javax.inject.Inject
 
-open class CpakGradleExtension{
+open class CpakGradleExtension @Inject constructor(val project: Project){
     var konanHome: String = "${System.getProperty("user.home")}/.konan/kotlin-native-prebuilt-macos-x86_64-1.5.30"
     var llvmHome: String = "${System.getProperty("user.home")}/.konan/dependencies/clang-llvm-apple-8.0.0-darwin-macos"
 }
