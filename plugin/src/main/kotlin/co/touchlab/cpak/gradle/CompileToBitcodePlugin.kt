@@ -18,7 +18,6 @@ class CompileToBitcodePlugin : Plugin<Project> {
         extensions.create(EXTENSION_NAME, CompileToBitcodeExtension::class.java, target)
         extensions.create(CPAK_EXTENSION_NAME, CpakGradleExtension::class.java, target)
 
-//        project.logger.warn("compile apply")
         afterEvaluate {
             // TODO: Support providers (https://docs.gradle.org/current/userguide/lazy_configuration.html)
             //       in database tasks and create them along with corresponding compile tasks (not in afterEvaluate).

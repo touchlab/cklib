@@ -11,17 +11,27 @@
 package co.touchlab.cpak.gradle
 
 import org.gradle.api.Project
-import org.gradle.api.plugins.BasePlugin
-import org.jetbrains.kotlin.konan.target.supportedSanitizers
 import javax.inject.Inject
 
 open class CompileToBitcodeExtension @Inject constructor(val project: Project) {
 
-    private val targetList = listOf("linux_x64", "macos_x64", "ios_arm64", "ios_arm32", "ios_simulator_arm64", "ios_x64", "watchos_arm32", "watchos_arm64", "watchos_x86", "watchos_x64",
-        "watchos_simulator_arm64", "tvos_arm64", "tvos_x64", "tvos_simulator_arm64", "macos_arm64")
-//    with(project) {
-//        provider { (rootProject.project(":kotlin-native").property("targetList") as? List<*>)?.filterIsInstance<String>() ?: emptyList() } // TODO: Can we make it better?
-//    }
+    private val targetList = listOf(
+        "linux_x64",
+        "macos_x64",
+        "ios_arm64",
+        "ios_arm32",
+        "ios_simulator_arm64",
+        "ios_x64",
+        "watchos_arm32",
+        "watchos_arm64",
+        "watchos_x86",
+        "watchos_x64",
+        "watchos_simulator_arm64",
+        "tvos_arm64",
+        "tvos_x64",
+        "tvos_simulator_arm64",
+        "macos_arm64"
+    )
 
     fun create(
         name: String,
@@ -29,50 +39,29 @@ open class CompileToBitcodeExtension @Inject constructor(val project: Project) {
         outputGroup: String = "main",
         configurationBlock: CompileToBitcode.() -> Unit = {}
     ) {
-
-//        project.logger.warn("create called ${name}, src dir ${srcDir.absolutePath}")
-
-        val platformManager = project.platformManager
-
+        project.tasks.register("bitcodeAll${name.snakeCaseToCamelCase().capitalize()}") {
+            it.group = GROUP_NAME
+            it.description = "Compiles '$name' to bitcode for all targets"
+        }
         targetList.forEach { targetName ->
-
-            val target = platformManager.targetByName(targetName)
-            val sanitizers: List<org.jetbrains.kotlin.konan.target.SanitizerKind?> =
-                target.supportedSanitizers() + listOf(null)
-            sanitizers.forEach { sanitizer ->
-                val taskName = "${targetName}${name.snakeCaseToCamelCase().capitalize()}${suffixForSanitizer(sanitizer)}"
-                project.logger.warn("taskName $taskName")
-                project.tasks.register(
-                    taskName,
-                    CompileToBitcode::class.java,
-                    srcDir, name, targetName, outputGroup
-                ).configure {
-                    it.sanitizer = sanitizer
-                    it.group = BasePlugin.BUILD_GROUP
-                    val sanitizerDescription = when (sanitizer) {
-                        null -> ""
-                        org.jetbrains.kotlin.konan.target.SanitizerKind.ADDRESS -> " with ASAN"
-                        org.jetbrains.kotlin.konan.target.SanitizerKind.THREAD -> " with TSAN"
-                    }
-                    it.description = "Compiles '$name' to bitcode for $targetName$sanitizerDescription"
-//                    dependsOn(":kotlin-native:dependencies:update")
-                    it.configurationBlock()
-                }
+            val taskName = "${targetName}${name.snakeCaseToCamelCase().capitalize()}"
+            project.logger.warn("taskName $taskName")
+            project.tasks.register(
+                taskName,
+                CompileToBitcode::class.java,
+                srcDir, name, targetName, outputGroup
+            ).configure {
+                it.group = GROUP_NAME
+                it.description = "Compiles '$name' to bitcode for $targetName"
+                it.configurationBlock()
             }
         }
     }
 
     companion object {
-
         private fun String.snakeCaseToCamelCase() =
             split('_').joinToString(separator = "") { it.capitalize() }
 
-        fun suffixForSanitizer(sanitizer: org.jetbrains.kotlin.konan.target.SanitizerKind?) =
-            when (sanitizer) {
-                null -> ""
-                org.jetbrains.kotlin.konan.target.SanitizerKind.ADDRESS -> "_ASAN"
-                org.jetbrains.kotlin.konan.target.SanitizerKind.THREAD -> "_TSAN"
-            }
-
+        const val GROUP_NAME = "bitcode"
     }
 }

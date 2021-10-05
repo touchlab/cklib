@@ -163,10 +163,7 @@ open class CompileToBitcode @Inject constructor(
     fun compile() {
         objDir.mkdirs()
 
-        project.logger.warn("ExecClang before load")
-        val plugin = ExecClang(project)//project.convention.getPlugin(ExecClang::class.java)
-        project.logger.warn("ExecClang after load")
-
+        val plugin = ExecClang(project)
         plugin.execKonanClang(target) {
             it.workingDir = objDir
             it.executable = executable
