@@ -46,7 +46,7 @@ open class CompileToBitcodeExtension @Inject constructor(val project: Project) {
         }.get()
         val allTaskProviders = targets.map { targetName ->
             val taskName = "${targetName}${name.snakeCaseToCamelCase().capitalize()}"
-            project.logger.warn("taskName $taskName")
+
             val taskProvider = project.tasks.register(
                 taskName,
                 CompileToBitcode::class.java,

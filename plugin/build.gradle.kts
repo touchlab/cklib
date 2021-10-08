@@ -66,6 +66,20 @@ afterEvaluate {
 
 tasks.shadowJar.dependsOn(tasks.findByName("relocateShadowJar")!!)*/
 
+val newPrefix = "cklib"
+tasks.shadowJar {
+  relocate("org.objectweb", "${newPrefix}.org.objectweb")
+  relocate("org.apache.commons", "${newPrefix}.org.apache.commons")
+  relocate("org.openjdk.jmh", "${newPrefix}.org.openjdk.jmh")
+  relocate("javax.annotation", "${newPrefix}.javax.annotation")
+  relocate("com.google", "${newPrefix}.com.google")
+  relocate("org.jetbrains", "${newPrefix}.org.jetbrains")
+  relocate("com.intellij", "${newPrefix}.com.intellij")
+//  relocate("kotlin.script", "${newPrefix}.kotlin.script")
+//  relocate("kotlin", "${newPrefix}.kotlin")
+
+}
+
 buildConfig {
   packageName("co.touchlab.cklib.gradle")
   buildConfigField("String", "KOTLIN_PLUGIN_ID", "\"${rootProject.extra["kotlin_plugin_id"]}\"")
