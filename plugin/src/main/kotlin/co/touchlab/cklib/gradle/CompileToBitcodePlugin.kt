@@ -32,8 +32,8 @@ class CompileToBitcodePlugin : Plugin<Project> {
     }
 
     companion object {
-        const val EXTENSION_NAME = "bitcode"
-        const val CKLIB_EXTENSION_NAME = "cklib"
-        const val COMPILATION_DATABASE_TASK_NAME = "CompilationDatabase"
+        const val EXTENSION_NAME = "cklib"
+        const val CKLIB_EXTENSION_NAME = "cklibPaths"
+        const val PLUGIN_NAME = "cklib"
     }
 }

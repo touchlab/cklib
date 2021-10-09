@@ -10,6 +10,7 @@
 
 package co.touchlab.cklib.gradle
 
+import co.touchlab.cklib.gradle.CompileToBitcodePlugin.Companion.PLUGIN_NAME
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.FileCollection
 import org.gradle.api.tasks.*
@@ -63,7 +64,7 @@ open class CompileToBitcode @Inject constructor(
     @get:Internal
     internal val targetDir: File
         get() {
-            return project.buildDir.resolve("bitcode/$compileName/$target")
+            return project.buildDir.resolve("$PLUGIN_NAME/$compileName/$target")
         }
 
     @get:OutputDirectory

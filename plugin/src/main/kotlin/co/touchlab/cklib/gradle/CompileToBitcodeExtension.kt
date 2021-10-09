@@ -66,7 +66,7 @@ open class CompileToBitcodeExtension @Inject constructor(val project: Project) {
         private fun String.snakeCaseToCamelCase() =
             split('_').joinToString(separator = "") { it.capitalize() }
 
-        const val GROUP_NAME = "bitcode"
+        const val GROUP_NAME = CompileToBitcodePlugin.PLUGIN_NAME
     }
 }
 
