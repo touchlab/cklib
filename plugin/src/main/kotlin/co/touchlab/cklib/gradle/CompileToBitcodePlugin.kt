@@ -18,19 +18,22 @@ class CompileToBitcodePlugin : Plugin<Project> {
         extensions.create(EXTENSION_NAME, CompileToBitcodeExtension::class.java, target)
         extensions.create(CKLIB_EXTENSION_NAME, CKlibGradleExtension::class.java, target)
 
-        afterEvaluate {
+//        target.pluginManager.apply(org.jetbrains.kotlin.gradle.plugin.mpp.KotlinMultiplatformPlugin::class.java)
+
+        Unit
+        /*afterEvaluate {
             // TODO: Support providers (https://docs.gradle.org/current/userguide/lazy_configuration.html)
             //       in database tasks and create them along with corresponding compile tasks (not in afterEvaluate).
             org.jetbrains.kotlin.createCompilationDatabasesFromCompileToBitcodeTasks(
                 project,
                 COMPILATION_DATABASE_TASK_NAME
             )
-        }
+        }*/
     }
 
     companion object {
-        const val EXTENSION_NAME = "bitcode"
-        const val CKLIB_EXTENSION_NAME = "cklib"
-        const val COMPILATION_DATABASE_TASK_NAME = "CompilationDatabase"
+        const val EXTENSION_NAME = "cklib"
+        const val CKLIB_EXTENSION_NAME = "cklibPaths"
+        const val PLUGIN_NAME = "cklib"
     }
 }

@@ -10,20 +10,20 @@
 
 package co.touchlab.cklib.gradle
 
+import co.touchlab.cklib.gradle.reflection.PlatformManager
 import org.gradle.api.Project
 import org.jetbrains.kotlin.konan.target.Distribution
-import org.jetbrains.kotlin.konan.target.PlatformManager
 import javax.inject.Inject
 
 open class CKlibGradleExtension @Inject constructor(val project: Project){
-    var konanHome: String = "${System.getProperty("user.home")}/.konan/kotlin-native-prebuilt-macos-x86_64-1.5.30"
+    var konanHome: String = "${System.getProperty("user.home")}/.konan/kotlin-native-prebuilt-macos-x86_64-${GradleValues.KOTLIN_VERSION}"
     var llvmHome: String = "${System.getProperty("user.home")}/.konan/dependencies/clang-llvm-apple-8.0.0-darwin-macos"
 }
 
 internal val Project.platformManager: PlatformManager
     get() {
         val cklibExtension = extensions.getByType(CKlibGradleExtension::class.java)
-        return PlatformManager(Distribution(cklibExtension.konanHome))
+        return PlatformManager(Distribution(cklibExtension.konanHome), cklibExtension.konanHome)
     }
 
 internal val Project.llvmHome: String

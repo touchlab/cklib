@@ -10,6 +10,7 @@
 
 package co.touchlab.cklib.gradle
 
+import co.touchlab.cklib.gradle.CompileToBitcodePlugin.Companion.PLUGIN_NAME
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.FileCollection
 import org.gradle.api.tasks.*
@@ -18,13 +19,12 @@ import javax.inject.Inject
 
 open class CompileToBitcode @Inject constructor(
     srcRoot: File,
-    @Input val folderName: String,
-    @Input val target: String,
-    @Input val outputGroup: String
+    @Input val compileName: String,
+    @Input val target: String
 ) : DefaultTask() {
 
     enum class Language {
-        C, CPP
+        C, CPP, OBJC
     }
 
     // Compiler args are part of compilerFlags so we don't register them as an input.
@@ -34,6 +34,10 @@ open class CompileToBitcode @Inject constructor(
     val linkerArgs = mutableListOf<String>()
     @Input
     var excludeFiles: List<String> = listOf(
+        "**/*Test.c",
+        "**/*TestSupport.c",
+        "**/*Test.m",
+        "**/*TestSupport.m",
         "**/*Test.cpp",
         "**/*TestSupport.cpp",
         "**/*Test.mm",
@@ -41,6 +45,8 @@ open class CompileToBitcode @Inject constructor(
     )
     @Input
     var includeFiles: List<String> = listOf(
+        "**/*.c",
+        "**/*.m",
         "**/*.cpp",
         "**/*.mm"
     )
@@ -55,22 +61,15 @@ open class CompileToBitcode @Inject constructor(
     @Input
     var language = Language.CPP
 
-    @Input @Optional
-    var sanitizer: org.jetbrains.kotlin.konan.target.SanitizerKind? = null
-
-    private val targetDir: File
+    @get:Internal
+    internal val targetDir: File
         get() {
-            val sanitizerSuffix = when (sanitizer) {
-                null -> ""
-                org.jetbrains.kotlin.konan.target.SanitizerKind.ADDRESS -> "-asan"
-                org.jetbrains.kotlin.konan.target.SanitizerKind.THREAD -> "-tsan"
-            }
-            return project.buildDir.resolve("bitcode/$outputGroup/$target$sanitizerSuffix")
+            return project.buildDir.resolve("$PLUGIN_NAME/$compileName/$target")
         }
 
     @get:OutputDirectory
     val objDir
-        get() = File(targetDir, folderName)
+        get() = File(targetDir, compileName)
 
     private val org.jetbrains.kotlin.konan.target.KonanTarget.isMINGW
         get() = this.family == org.jetbrains.kotlin.konan.target.Family.MINGW
@@ -78,7 +77,7 @@ open class CompileToBitcode @Inject constructor(
     @get:Internal
     val executable
         get() = when (language) {
-            Language.C -> "clang"
+            Language.C, Language.OBJC -> "clang"
             Language.CPP -> "clang++"
         }
 
@@ -86,11 +85,6 @@ open class CompileToBitcode @Inject constructor(
     val compilerFlags: List<String>
         get() {
             val commonFlags = listOf("-c", "-emit-llvm") + headersDirs.map { "-I$it" }
-            val sanitizerFlags = when (sanitizer) {
-                null -> listOf()
-                org.jetbrains.kotlin.konan.target.SanitizerKind.ADDRESS -> listOf("-fsanitize=address")
-                org.jetbrains.kotlin.konan.target.SanitizerKind.THREAD -> listOf("-fsanitize=thread")
-            }
             val languageFlags = when (language) {
                 Language.C ->
                     // Used flags provided by original build of allocator C code.
@@ -100,8 +94,11 @@ open class CompileToBitcode @Inject constructor(
                         "-Wall", "-Wextra",
                         "-Wno-unused-parameter"  // False positives with polymorphic functions.
                     )
+                Language.OBJC ->
+                    // Used flags provided by original build of allocator C code.
+                    listOf("-fobjc-arc", "-fmodules", "-mmacosx-version-min=10.6","-std=gnu11", "-O3", "-Wall", "-Wextra", "-Werror")
             }
-            return commonFlags + sanitizerFlags + languageFlags + compilerArgs
+            return commonFlags + languageFlags + compilerArgs
         }
 
     @get:SkipWhenEmpty
@@ -147,7 +144,7 @@ open class CompileToBitcode @Inject constructor(
             return dirs.flatMap { dir ->
                 project.fileTree(dir) {
                     val includePatterns = when (language) {
-                        Language.C -> arrayOf("**/.h")
+                        Language.C, Language.OBJC -> arrayOf("**/.h")
                         Language.CPP -> arrayOf("**/*.h", "**/*.hpp")
                     }
                     it.include(*includePatterns)
@@ -157,7 +154,7 @@ open class CompileToBitcode @Inject constructor(
 
     @get:OutputFile
     val outFile: File
-        get() = File(targetDir, "${folderName}.bc")
+        get() = File(targetDir, "${compileName}.bc")
 
     @TaskAction
     fun compile() {
