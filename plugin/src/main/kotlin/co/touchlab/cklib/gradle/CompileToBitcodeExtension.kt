@@ -16,62 +16,45 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import javax.inject.Inject
 
 open class CompileToBitcodeExtension @Inject constructor(val project: Project) {
-/*
-    private val targetList = listOf(
-        "linux_x64",
-        "macos_x64",
-        "ios_arm64",
-        "ios_arm32",
-        "ios_simulator_arm64",
-        "ios_x64",
-        "watchos_arm32",
-        "watchos_arm64",
-        "watchos_x86",
-        "watchos_x64",
-        "watchos_simulator_arm64",
-        "tvos_arm64",
-        "tvos_x64",
-        "tvos_simulator_arm64",
-        "macos_arm64"
-    )*/
-
 
     fun create(
         name: String,
         srcDir: java.io.File = project.file("src/$name"),
-        outputGroup: String = "main",
+        compilations: List<String> = listOf("main"),
         configurationBlock: CompileToBitcode.() -> Unit = {}
     ) {
-        val targets: List<String> = project.kmpExt.kotlinNativeTargets.map { t ->
-            t.konanTarget.name
-        }
         val kmpExt = project.kmpExt
-
-        val targetsByKonan = kmpExt.kotlinNativeTargets.associateBy({it.konanTarget.name}, {it})
 
         val allBitcode = project.tasks.register("all${name.snakeCaseToCamelCase().capitalize()}") {
             it.group = GROUP_NAME
             it.description = "Compiles '$name' to bitcode for all targets"
         }.get()
 
-        val allTaskProviders = targets.map { targetName ->
-            val taskName = "${targetName}${name.snakeCaseToCamelCase().capitalize()}"
+        val allTaskProviders = kmpExt.kotlinNativeTargets.map { knTarget ->
+            val taskName = "${knTarget.name}${name.snakeCaseToCamelCase().capitalize()}"
 
             val taskProvider = project.tasks.register(
                 taskName,
                 CompileToBitcode::class.java,
-                srcDir, name, targetName, outputGroup
+                srcDir, name, knTarget.konanTarget.name
             )
 
             //tasks.getByName("compileKotlin${targetName.capitalize()}").dependsOn("${it.second}Quickjs")
-            project.tasks.getByPath("compileKotlin${targetsByKonan[targetName]!!.name.capitalize()}")
+            project.tasks.getByPath("compileKotlin${knTarget.name.capitalize()}")
                 .dependsOn(taskName)
 
-            taskProvider.configure {
-                it.group = GROUP_NAME
-                it.description = "Compiles '$name' to bitcode for $targetName"
+            taskProvider.configure { compileToBitcodeTask ->
+                compileToBitcodeTask.group = GROUP_NAME
+                compileToBitcodeTask.description = "Compiles '$name' to bitcode for ${knTarget.name}"
 
-                it.configurationBlock()
+                compilations.forEach { compilation ->
+                    val knCompilation = knTarget.compilations.getByName(compilation)
+
+                    knCompilation.kotlinOptions.freeCompilerArgs +=
+                        listOf("-native-library", compileToBitcodeTask.outFile.absolutePath)
+                }
+
+                compileToBitcodeTask.configurationBlock()
             }
 
             taskProvider

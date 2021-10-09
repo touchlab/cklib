@@ -25,46 +25,20 @@ class ExecClang(private val project: Project) {
         return platformManager.clangArgsForKonanSourcesForTarget(target)
     }
 
-    fun clangArgsForCppRuntime(targetName: String?): List<String> {
+    private fun clangArgsForCppRuntime(targetName: String?): List<String> {
         val target = platformManager.targetForName(targetName)
         return clangArgsForCppRuntime(target)
     }
 
-    fun resolveExecutable(executableOrNull: String?): String {
+    private fun resolveExecutable(executableOrNull: String?): String {
         val executable = executableOrNull ?: "clang"
 
         if (listOf("clang", "clang++").contains(executable)) {
-            val llvmDir = "/Users/kgalligan/.konan/dependencies/clang-llvm-apple-8.0.0-darwin-macos"//project.findProperty("llvmDir")
+            val llvmDir = project.llvmHome
             return "${llvmDir}/bin/$executable"
         } else {
             throw GradleException("unsupported clang executable: $executable")
         }
-    }
-
-    fun resolveToolchainExecutable(target: org.jetbrains.kotlin.konan.target.KonanTarget, executableOrNull: String?): String {
-        val executable = executableOrNull ?: "clang"
-
-        if (listOf("clang", "clang++").contains(executable)) {
-            return "/usr/bin/$executable"
-            /*val platform = platformManager.platform(target)
-            return if (target.family.isAppleFamily) {
-                "${platform.absoluteTargetToolchain}/usr/bin/$executable"
-            } else {
-                "${platform.absoluteTargetToolchain}/bin/$executable"
-            }*/
-        } else {
-            throw GradleException("unsupported clang executable: $executable")
-        }
-    }
-
-    // The bare ones invoke clang with system default sysroot.
-
-    fun execBareClang(action: Action<in ExecSpec>): ExecResult {
-        return this.execClang(emptyList<String>(), action)
-    }
-
-    fun execBareClang(closure: groovy.lang.Closure<in ExecSpec>): ExecResult {
-        return this.execClang(emptyList<String>(), closure)
     }
 
     // The konan ones invoke clang with konan provided sysroots.
@@ -74,69 +48,6 @@ class ExecClang(private val project: Project) {
 
     fun execKonanClang(target: String?, action: Action<in ExecSpec>): ExecResult {
         return this.execClang(clangArgsForCppRuntime(target), action)
-    }
-
-    fun execKonanClang(target: org.jetbrains.kotlin.konan.target.KonanTarget, action: Action<in ExecSpec>): ExecResult {
-        return this.execClang(clangArgsForCppRuntime(target), action)
-    }
-
-    fun execKonanClang(target: String?, closure: groovy.lang.Closure<in ExecSpec>): ExecResult {
-        return this.execClang(clangArgsForCppRuntime(target), closure)
-    }
-
-    fun execKonanClang(target: org.jetbrains.kotlin.konan.target.KonanTarget, closure: groovy.lang.Closure<in ExecSpec>): ExecResult {
-        return this.execClang(clangArgsForCppRuntime(target), closure)
-    }
-
-    /**
-     * Execute Clang the way that produced object file is compatible with
-     * the one that produced by Kotlin/Native for given [target]. It means:
-     * 1. We pass flags that set sysroot.
-     * 2. We call Clang from toolchain in case of Apple target.
-     */
-    fun execClangForCompilerTests(target: org.jetbrains.kotlin.konan.target.KonanTarget, action: Action<in ExecSpec>): ExecResult {
-        val defaultArgs = platformManager.clangArgsForTarget(target)
-        return project.exec(Action<ExecSpec> {
-            action.execute(it)
-            it.executable = if (target.family.isAppleFamily) {
-                resolveToolchainExecutable(target, it.executable)
-            } else {
-                resolveExecutable(it.executable)
-            }
-            it.args = defaultArgs + it.args
-        })
-    }
-
-    /**
-     * @see execClangForCompilerTests
-     */
-    fun execClangForCompilerTests(target: org.jetbrains.kotlin.konan.target.KonanTarget, closure: groovy.lang.Closure<in ExecSpec>): ExecResult =
-        execClangForCompilerTests(target, org.gradle.util.ConfigureUtil.configureUsing(closure))
-
-    // The toolchain ones execute clang from the toolchain.
-
-    fun execToolchainClang(target: String?, action: Action<in ExecSpec>): ExecResult {
-        return this.execToolchainClang(platformManager.targetForName(target), action)
-    }
-
-    fun execToolchainClang(target: String?, closure: groovy.lang.Closure<in ExecSpec>): ExecResult {
-        return this.execToolchainClang(platformManager.targetForName(target), org.gradle.util.ConfigureUtil.configureUsing(closure))
-    }
-
-    fun execToolchainClang(target: org.jetbrains.kotlin.konan.target.KonanTarget, action: Action<in ExecSpec>): ExecResult {
-        val extendedAction = Action<ExecSpec> {
-            action.execute(it)
-            it.executable = resolveToolchainExecutable(target, it.executable)
-        }
-        return project.exec(extendedAction)
-    }
-
-    fun execToolchainClang(target: org.jetbrains.kotlin.konan.target.KonanTarget, closure: groovy.lang.Closure<in ExecSpec>): ExecResult {
-        return this.execToolchainClang(target, org.gradle.util.ConfigureUtil.configureUsing(closure))
-    }
-
-    private fun execClang(defaultArgs: List<String>, closure: groovy.lang.Closure<in ExecSpec>): ExecResult {
-        return this.execClang(defaultArgs, org.gradle.util.ConfigureUtil.configureUsing(closure))
     }
 
     private fun execClang(defaultArgs: List<String>, action: Action<in ExecSpec>): ExecResult {
