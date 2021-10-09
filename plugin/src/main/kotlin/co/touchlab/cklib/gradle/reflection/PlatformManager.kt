@@ -18,9 +18,8 @@ import java.net.URLClassLoader
 /**
  * Use reflection to grab what we want from the konan distribution
  */
-class PlatformManager(dist: Distribution) {
-
-    private val kotlinNativeJar = "${System.getProperty("user.home")}/.konan/kotlin-native-prebuilt-macos-x86_64-1.5.31/konan/lib/kotlin-native.jar"
+class PlatformManager(dist: Distribution, konanHome:String) {
+    private val kotlinNativeJar = "${konanHome}/konan/lib/kotlin-native.jar"
     private val pmClass:Class<*>
     private val blindDelegate:Any
 

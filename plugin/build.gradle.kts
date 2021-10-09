@@ -3,12 +3,13 @@ plugins {
   kotlin("jvm")
   id("com.github.gmazzo.buildconfig")
   id("com.vanniktech.maven.publish")
-//  id("com.github.johnrengelman.shadow").version("7.0.0")
 }
+
+val KOTLIN_VERSION: String by project
 
 dependencies {
   implementation(gradleApi())
-  implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.31")
+  implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:$KOTLIN_VERSION")
 }
 
 buildConfig {
