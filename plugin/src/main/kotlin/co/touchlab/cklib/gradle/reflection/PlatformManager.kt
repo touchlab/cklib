@@ -50,7 +50,10 @@ class PlatformManager(dist: Distribution, konanHome:String) {
         val platformMethod = pmClass.getDeclaredMethod("platform", KonanTarget::class.java)
         val platformInstance = platformMethod.invoke(blindDelegate, target)
         val clangArgsInstance = platformInstance.javaClass.getDeclaredMethod("getClang").invoke(platformInstance)
-        return (clangArgsInstance.javaClass.getDeclaredMethod(methodName).invoke(clangArgsInstance) as Array<String>).toList()
+        val clangArgs = (clangArgsInstance.javaClass.getDeclaredMethod(methodName)
+            .invoke(clangArgsInstance) as Array<String>).toList()
+//        println("clangArgs/$methodName [${clangArgs.joinToString()}]")
+        return clangArgs
     }
 
     //platformManager.hostPlatform.clang.clangPaths
