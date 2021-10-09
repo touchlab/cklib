@@ -17,15 +17,15 @@ class CompileToBitcodePlugin : Plugin<Project> {
     override fun apply(target: Project) = with(target) {
         extensions.create(EXTENSION_NAME, CompileToBitcodeExtension::class.java, target)
         extensions.create(CKLIB_EXTENSION_NAME, CKlibGradleExtension::class.java, target)
-
-        afterEvaluate {
+        Unit
+        /*afterEvaluate {
             // TODO: Support providers (https://docs.gradle.org/current/userguide/lazy_configuration.html)
             //       in database tasks and create them along with corresponding compile tasks (not in afterEvaluate).
             org.jetbrains.kotlin.createCompilationDatabasesFromCompileToBitcodeTasks(
                 project,
                 COMPILATION_DATABASE_TASK_NAME
             )
-        }
+        }*/
     }
 
     companion object {

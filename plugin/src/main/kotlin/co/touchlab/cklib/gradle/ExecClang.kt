@@ -22,11 +22,11 @@ class ExecClang(private val project: Project) {
     private val platformManager = project.platformManager
 
     private fun clangArgsForCppRuntime(target: org.jetbrains.kotlin.konan.target.KonanTarget): List<String> {
-        return platformManager.platform(target).clang.clangArgsForKonanSources.asList()
+        return platformManager.clangArgsForKonanSourcesForTarget(target)
     }
 
     fun clangArgsForCppRuntime(targetName: String?): List<String> {
-        val target = platformManager.targetManager(targetName).target
+        val target = platformManager.targetForName(targetName)
         return clangArgsForCppRuntime(target)
     }
 
@@ -45,13 +45,13 @@ class ExecClang(private val project: Project) {
         val executable = executableOrNull ?: "clang"
 
         if (listOf("clang", "clang++").contains(executable)) {
-            // TODO: This is copied from `BitcodeCompiler`. Consider sharing the code instead.
-            val platform = platformManager.platform(target)
+            return "/usr/bin/$executable"
+            /*val platform = platformManager.platform(target)
             return if (target.family.isAppleFamily) {
                 "${platform.absoluteTargetToolchain}/usr/bin/$executable"
             } else {
                 "${platform.absoluteTargetToolchain}/bin/$executable"
-            }
+            }*/
         } else {
             throw GradleException("unsupported clang executable: $executable")
         }
@@ -95,7 +95,7 @@ class ExecClang(private val project: Project) {
      * 2. We call Clang from toolchain in case of Apple target.
      */
     fun execClangForCompilerTests(target: org.jetbrains.kotlin.konan.target.KonanTarget, action: Action<in ExecSpec>): ExecResult {
-        val defaultArgs = platformManager.platform(target).clang.clangArgs.toList()
+        val defaultArgs = platformManager.clangArgsForTarget(target)
         return project.exec(Action<ExecSpec> {
             action.execute(it)
             it.executable = if (target.family.isAppleFamily) {
@@ -116,11 +116,11 @@ class ExecClang(private val project: Project) {
     // The toolchain ones execute clang from the toolchain.
 
     fun execToolchainClang(target: String?, action: Action<in ExecSpec>): ExecResult {
-        return this.execToolchainClang(platformManager.targetManager(target).target, action)
+        return this.execToolchainClang(platformManager.targetForName(target), action)
     }
 
     fun execToolchainClang(target: String?, closure: groovy.lang.Closure<in ExecSpec>): ExecResult {
-        return this.execToolchainClang(platformManager.targetManager(target).target, org.gradle.util.ConfigureUtil.configureUsing(closure))
+        return this.execToolchainClang(platformManager.targetForName(target), org.gradle.util.ConfigureUtil.configureUsing(closure))
     }
 
     fun execToolchainClang(target: org.jetbrains.kotlin.konan.target.KonanTarget, action: Action<in ExecSpec>): ExecResult {
@@ -144,8 +144,8 @@ class ExecClang(private val project: Project) {
             action.execute(it)
             it.executable = resolveExecutable(it.executable)
 
-            val hostPlatform = platformManager.hostPlatform//project.findProperty("hostPlatform") as org.jetbrains.kotlin.konan.target.Platform
-            it.environment["PATH"] = project.files(hostPlatform.clang.clangPaths).asPath +
+//            val hostPlatform = platformManager.hostPlatform//project.findProperty("hostPlatform") as org.jetbrains.kotlin.konan.target.Platform
+            it.environment["PATH"] = project.files(platformManager.hostPlatform_clang_clangPaths).asPath +
                     File.pathSeparator + it.environment["PATH"]
             it.args = it.args + defaultArgs
         }

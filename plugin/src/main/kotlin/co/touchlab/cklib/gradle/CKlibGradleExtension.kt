@@ -10,9 +10,9 @@
 
 package co.touchlab.cklib.gradle
 
+import co.touchlab.cklib.gradle.reflection.PlatformManager
 import org.gradle.api.Project
 import org.jetbrains.kotlin.konan.target.Distribution
-import org.jetbrains.kotlin.konan.target.PlatformManager
 import javax.inject.Inject
 
 open class CKlibGradleExtension @Inject constructor(val project: Project){

@@ -55,17 +55,9 @@ open class CompileToBitcode @Inject constructor(
     @Input
     var language = Language.CPP
 
-    @Input @Optional
-    var sanitizer: org.jetbrains.kotlin.konan.target.SanitizerKind? = null
-
     private val targetDir: File
         get() {
-            val sanitizerSuffix = when (sanitizer) {
-                null -> ""
-                org.jetbrains.kotlin.konan.target.SanitizerKind.ADDRESS -> "-asan"
-                org.jetbrains.kotlin.konan.target.SanitizerKind.THREAD -> "-tsan"
-            }
-            return project.buildDir.resolve("bitcode/$outputGroup/$target$sanitizerSuffix")
+            return project.buildDir.resolve("bitcode/$outputGroup/$target")
         }
 
     @get:OutputDirectory
@@ -86,11 +78,6 @@ open class CompileToBitcode @Inject constructor(
     val compilerFlags: List<String>
         get() {
             val commonFlags = listOf("-c", "-emit-llvm") + headersDirs.map { "-I$it" }
-            val sanitizerFlags = when (sanitizer) {
-                null -> listOf()
-                org.jetbrains.kotlin.konan.target.SanitizerKind.ADDRESS -> listOf("-fsanitize=address")
-                org.jetbrains.kotlin.konan.target.SanitizerKind.THREAD -> listOf("-fsanitize=thread")
-            }
             val languageFlags = when (language) {
                 Language.C ->
                     // Used flags provided by original build of allocator C code.
@@ -101,7 +88,7 @@ open class CompileToBitcode @Inject constructor(
                         "-Wno-unused-parameter"  // False positives with polymorphic functions.
                     )
             }
-            return commonFlags + sanitizerFlags + languageFlags + compilerArgs
+            return commonFlags + languageFlags + compilerArgs
         }
 
     @get:SkipWhenEmpty
