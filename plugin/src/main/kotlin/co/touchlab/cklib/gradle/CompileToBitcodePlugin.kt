@@ -17,6 +17,9 @@ class CompileToBitcodePlugin : Plugin<Project> {
     override fun apply(target: Project) = with(target) {
         extensions.create(EXTENSION_NAME, CompileToBitcodeExtension::class.java, target)
         extensions.create(CKLIB_EXTENSION_NAME, CKlibGradleExtension::class.java, target)
+
+//        target.pluginManager.apply(org.jetbrains.kotlin.gradle.plugin.mpp.KotlinMultiplatformPlugin::class.java)
+
         Unit
         /*afterEvaluate {
             // TODO: Support providers (https://docs.gradle.org/current/userguide/lazy_configuration.html)

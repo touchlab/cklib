@@ -11,6 +11,8 @@
 package co.touchlab.cklib.gradle
 
 import org.gradle.api.Project
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import javax.inject.Inject
 
 open class CompileToBitcodeExtension @Inject constructor(val project: Project) {
@@ -33,17 +35,25 @@ open class CompileToBitcodeExtension @Inject constructor(val project: Project) {
         "macos_arm64"
     )*/
 
+
     fun create(
         name: String,
-        targets: List<String>,
         srcDir: java.io.File = project.file("src/$name"),
         outputGroup: String = "main",
         configurationBlock: CompileToBitcode.() -> Unit = {}
     ) {
+        val targets: List<String> = project.kmpExt.kotlinNativeTargets.map { t ->
+            t.konanTarget.name
+        }
+        val kmpExt = project.kmpExt
+
+        val targetsByKonan = kmpExt.kotlinNativeTargets.associateBy({it.konanTarget.name}, {it})
+
         val allBitcode = project.tasks.register("all${name.snakeCaseToCamelCase().capitalize()}") {
             it.group = GROUP_NAME
             it.description = "Compiles '$name' to bitcode for all targets"
         }.get()
+
         val allTaskProviders = targets.map { targetName ->
             val taskName = "${targetName}${name.snakeCaseToCamelCase().capitalize()}"
 
@@ -52,11 +62,18 @@ open class CompileToBitcodeExtension @Inject constructor(val project: Project) {
                 CompileToBitcode::class.java,
                 srcDir, name, targetName, outputGroup
             )
+
+            //tasks.getByName("compileKotlin${targetName.capitalize()}").dependsOn("${it.second}Quickjs")
+            project.tasks.getByPath("compileKotlin${targetsByKonan[targetName]!!.name.capitalize()}")
+                .dependsOn(taskName)
+
             taskProvider.configure {
                 it.group = GROUP_NAME
                 it.description = "Compiles '$name' to bitcode for $targetName"
+
                 it.configurationBlock()
             }
+
             taskProvider
         }
         allBitcode.dependsOn(allTaskProviders)
@@ -69,3 +86,9 @@ open class CompileToBitcodeExtension @Inject constructor(val project: Project) {
         const val GROUP_NAME = "bitcode"
     }
 }
+
+private val KotlinMultiplatformExtension.kotlinNativeTargets: Collection<KotlinNativeTarget>
+    get() = targets.withType(KotlinNativeTarget::class.java)
+
+private val Project.kmpExt: KotlinMultiplatformExtension
+    get() = extensions.getByType(KotlinMultiplatformExtension::class.java)
