@@ -30,7 +30,8 @@ open class CompileToBitcodeExtension @Inject constructor(val project: Project) {
             it.description = "Compiles '$name' to bitcode for all targets"
         }.get()
 
-        val allTaskProviders = kmpExt.kotlinNativeTargets.map { knTarget ->
+        val allTaskProviders = kmpExt.kotlinNativeTargets.filter { project.platformManager.isEnabled(it.konanTarget) }.map { knTarget ->
+
             val taskName = "${knTarget.name}${name.snakeCaseToCamelCase().capitalize()}"
 
             val taskProvider = project.tasks.register(

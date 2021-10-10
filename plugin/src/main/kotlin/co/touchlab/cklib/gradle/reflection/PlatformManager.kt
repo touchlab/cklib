@@ -64,4 +64,9 @@ class PlatformManager(dist: Distribution, konanHome:String) {
             val clangArgsInstance = platformInstance.javaClass.getDeclaredMethod("getClang").invoke(platformInstance)
             return clangArgsInstance.javaClass.getDeclaredMethod("getClangPaths").invoke(clangArgsInstance) as List<String>
         }
+
+    fun isEnabled(target: KonanTarget): Boolean {
+        val isEnabledMethod = pmClass.superclass.getDeclaredMethod("isEnabled", KonanTarget::class.java)
+        return isEnabledMethod.invoke(blindDelegate, target) as Boolean
+    }
 }
