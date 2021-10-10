@@ -25,6 +25,51 @@ This plugin hasn't been designed for all use cases. We needed to compile and emb
 You may want to build and embed C-etc code for other use cases we haven't considered, and this plugin will almost certainly
 need to be modified for your particular situation. Please start conversations and/or submit PRs if you add anything significant.
 
+## Usage
+
+Add the plugin to your buildscript path:
+
+```kotlin
+buildscript {
+  repositories {
+    mavenCentral() // <- need this
+    google()
+    gradlePluginPortal()
+  }
+  dependencies {
+    classpath("co.touchlab:cklib-gradle-plugin:1.5.31.3") // <- Replace with current version
+  }
+}
+```
+
+Apply the plugin. You will also need to have the Kotlin Multiplatform plugin applied. CKlib depends on it.
+
+```kotlin
+plugins {
+  kotlin("multiplatform")
+  id("co.touchlab.cklib")
+}
+```
+
+To create compilations, add the `cklib` block and then point at C-etc source.
+
+```kotlin
+cklib {
+  create("somecode") {
+    language = C
+    compilerArgs.addAll(
+      listOf(
+        "-Wno-unused-function"
+      )
+    )
+  }
+}
+```
+
+By default, the C-etc code is built and packaged in compatible Kotlin/Native klibs. You can specify source folders and 
+you will likely need to add some compiler args. Anything more custom will probably require tweaking the plugin itself, as 
+it was really designed for a very particular use case.
+
 ## Versioning
 
 The underlying code comes from [the Kotlin repo](https://github.com/JetBrains/kotlin/), and references local dependencies that
