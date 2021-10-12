@@ -5,6 +5,11 @@ plugins {
   id("com.vanniktech.maven.publish")
 }
 
+java {
+  sourceCompatibility = JavaVersion.VERSION_1_8
+  targetCompatibility = JavaVersion.VERSION_1_8
+}
+
 val KOTLIN_VERSION: String by project
 
 dependencies {

@@ -1,0 +1,1 @@
+""-fasm-blocks", "-fstrict-aliasing", "-Wprotocol", "-Wdeprecated-declarations", "-g", "-Wno-sign-conversion", "-Winfinite-recursion", "-Wcomma", "-Wblock-capture-autoreleasing", "-Wstrict-prototypes", "-Wno-semicolon-before-method-body", "-Wunguarded-availability", "-fobjc-abi-version\=2", "-fobjc-legacy-dispatch"

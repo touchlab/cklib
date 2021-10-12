@@ -96,7 +96,28 @@ open class CompileToBitcode @Inject constructor(
                     )
                 Language.OBJC ->
                     // Used flags provided by original build of allocator C code.
-                    listOf("-fobjc-arc", "-fmodules", "-mmacosx-version-min=10.6","-std=gnu11", "-O3", "-Wall", "-Wextra", "-Werror")
+                    listOf("-x", "objective-c", "-std=gnu11", "-fobjc-arc", "-fobjc-weak", //"-framework", "Foundation",// "-mmacosx-version-min=10.6",
+                        "-ObjC",
+//                        "-fmodules", "-gmodules",
+                            "-Wno-missing-field-initializers", "-Wno-missing-prototypes", "-Werror=return-type", "-Wdocumentation", "-Wunreachable-code",
+                        "-Wquoted-include-in-framework-header", "-Wno-implicit-atomic-properties", "-Werror=deprecated-objc-isa-usage", "-Wno-objc-interface-ivars",
+//
+                        "-Werror=objc-root-class", "-Wno-arc-repeated-use-of-weak", "-Wimplicit-retain-self", "-Wduplicate-method-match", "-Wno-missing-braces",
+                        "-Wparentheses", "-Wswitch", "-Wunused-function", "-Wno-unused-label", "-Wno-unused-parameter", "-Wunused-variable", "-Wunused-value",
+                        "-Wempty-body", "-Wuninitialized", "-Wconditional-uninitialized", "-Wno-unknown-pragmas", "-Wno-shadow", "-Wno-four-char-constants",
+
+                        "-Wno-conversion", "-Wconstant-conversion", "-Wint-conversion", "-Wbool-conversion", "-Wenum-conversion", "-Wno-float-conversion",
+                        "-Wnon-literal-null-conversion", "-Wobjc-literal-conversion",
+                        "-Wshorten-64-to-32",
+                        "-Wpointer-sign", "-Wno-newline-eof", "-Wno-selector",
+                        "-Wno-strict-selector-match", "-Wundeclared-selector", "-Wdeprecated-implementations",
+//
+                        "-fasm-blocks", "-fstrict-aliasing", "-Wprotocol", "-Wdeprecated-declarations", "-g", "-Wno-sign-conversion", "-Winfinite-recursion", "-Wcomma",
+                        "-Wblock-capture-autoreleasing", "-Wstrict-prototypes", "-Wno-semicolon-before-method-body", "-Wunguarded-availability", "-fobjc-abi-version=2", "-fobjc-legacy-dispatch",
+
+                    )
+
+                //, "-isysroot", "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator14.5.sdk"
             }
             return commonFlags + languageFlags + compilerArgs
         }

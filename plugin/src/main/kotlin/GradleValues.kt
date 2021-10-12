@@ -9,5 +9,5 @@
  */
 
 object GradleValues {
-    val KOTLIN_VERSION = "1.5.30"
+    val KOTLIN_VERSION = "1.5.31"
 }
