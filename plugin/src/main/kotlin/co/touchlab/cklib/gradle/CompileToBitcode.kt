@@ -95,7 +95,7 @@ open class CompileToBitcode @Inject constructor(
                         "-Wno-unused-parameter"  // False positives with polymorphic functions.
                     )
                 Language.OBJC ->
-                    // Used flags provided by original build of allocator C code.
+                    // Most of these flags are from Xcode building source. We *may* remove a lot of these eventually, but for now we'll be lazy
                     listOf("-x", "objective-c", "-std=gnu11", "-fobjc-arc", "-fobjc-weak", //"-framework", "Foundation",// "-mmacosx-version-min=10.6",
                         "-ObjC",
 //                        "-fmodules", "-gmodules",
