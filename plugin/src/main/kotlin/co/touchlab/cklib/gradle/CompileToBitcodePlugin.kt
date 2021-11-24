@@ -12,12 +12,16 @@ package co.touchlab.cklib.gradle
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 class CompileToBitcodePlugin : Plugin<Project> {
     override fun apply(target: Project) = with(target) {
         extensions.create(EXTENSION_NAME, CompileToBitcodeExtension::class.java, target)
         extensions.create(CKLIB_EXTENSION_NAME, CKlibGradleExtension::class.java, target)
 
+        target.pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform"){ appliedPlugin ->
+            extensions.getByType(KotlinMultiplatformExtension::class.java)
+        }
 //        target.pluginManager.apply(org.jetbrains.kotlin.gradle.plugin.mpp.KotlinMultiplatformPlugin::class.java)
 
         Unit

@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
   id("java-gradle-plugin")
   kotlin("jvm")
@@ -15,6 +17,7 @@ val KOTLIN_VERSION: String by project
 dependencies {
   implementation(gradleApi())
   implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:$KOTLIN_VERSION")
+  implementation(kotlin("stdlib-jdk8"))
 }
 
 buildConfig {
@@ -34,4 +37,15 @@ gradlePlugin {
       implementationClass = "co.touchlab.cklib.gradle.CompileToBitcodePlugin"
     }
   }
+}
+repositories {
+  mavenCentral()
+}
+val compileKotlin: KotlinCompile by tasks
+compileKotlin.kotlinOptions {
+  jvmTarget = "1.8"
+}
+val compileTestKotlin: KotlinCompile by tasks
+compileTestKotlin.kotlinOptions {
+  jvmTarget = "1.8"
 }
