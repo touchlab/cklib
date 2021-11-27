@@ -17,7 +17,6 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 class CompileToBitcodePlugin : Plugin<Project> {
     override fun apply(target: Project) = with(target) {
         extensions.create(EXTENSION_NAME, CompileToBitcodeExtension::class.java, target)
-        extensions.create(CKLIB_EXTENSION_NAME, CKlibGradleExtension::class.java, target)
 
         target.pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform"){ appliedPlugin ->
             extensions.getByType(KotlinMultiplatformExtension::class.java)
@@ -37,7 +36,6 @@ class CompileToBitcodePlugin : Plugin<Project> {
 
     companion object {
         const val EXTENSION_NAME = "cklib"
-        const val CKLIB_EXTENSION_NAME = "cklibPaths"
         const val PLUGIN_NAME = "cklib"
     }
 }

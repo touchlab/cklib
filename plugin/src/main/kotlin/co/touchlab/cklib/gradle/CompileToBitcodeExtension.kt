@@ -17,6 +17,8 @@ import javax.inject.Inject
 
 open class CompileToBitcodeExtension @Inject constructor(val project: Project) {
 
+    val config = CKlibGradleExtension(project)
+
     fun create(
         name: String,
         srcDir: java.io.File = project.file("src/$name"),

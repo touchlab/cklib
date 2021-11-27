@@ -23,12 +23,11 @@ plugins {
 }
 
 val GROUP: String by project
-val KOTLIN_VERSION: String by project
-val VERSION_EXTENSION: String by project
+val CKLIB_VERSION: String by project
 
 allprojects {
     group = GROUP
-    version = "${KOTLIN_VERSION}.${VERSION_EXTENSION}"
+    version = CKLIB_VERSION
 }
 
 allprojects {

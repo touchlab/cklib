@@ -51,10 +51,11 @@ plugins {
 }
 ```
 
-To create compilations, add the `cklib` block and then point at C-etc source.
+To create compilations, add the `cklib` block, set the Kotlin version, and then point at C-etc source.
 
 ```kotlin
 cklib {
+  config.kotlinVersion = "1.6.0"  
   create("somecode") {
     language = C
     compilerArgs.addAll(
@@ -69,14 +70,6 @@ cklib {
 By default, the C-etc code is built and packaged in compatible Kotlin/Native klibs. You can specify source folders and 
 you will likely need to add some compiler args. Anything more custom will probably require tweaking the plugin itself, as 
 it was really designed for a very particular use case.
-
-## Versioning
-
-The underlying code comes from [the Kotlin repo](https://github.com/JetBrains/kotlin/), and references local dependencies that
-are tightly coupled with Kotlin versions. As such, we have a 4 number version system. The first 3 are the Kotlin version, and
-the last is our point version.
-
-So, for Kotlin 1.5.31, we have CKlib 1.5.31.3, which is the 3rd point release.
 
 ## We're Hiring!
 

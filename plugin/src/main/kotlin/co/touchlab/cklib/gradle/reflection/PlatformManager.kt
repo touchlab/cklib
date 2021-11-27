@@ -44,15 +44,14 @@ class PlatformManager(dist: Distribution, konanHome:String) {
     fun clangArgsForTarget(target: KonanTarget): List<String> = clangBagOfStrings(target, "getClangArgs")
 
     //platform(target).clang.clangArgsForKonanSources.asList()
-    fun clangArgsForKonanSourcesForTarget(target: KonanTarget): List<String> = clangBagOfStrings(target, "getClangArgsForKonanSources")
+    fun clangArgsForKonanSourcesForTarget(target: KonanTarget): List<String> = clangBagOfStrings(target, "getClangArgsForKonanSources", true)
 
-    private fun clangBagOfStrings(target: KonanTarget, methodName: String): List<String>{
+    private fun clangBagOfStrings(target: KonanTarget, methodName: String, printMethods: Boolean = false): List<String>{
         val platformMethod = pmClass.getDeclaredMethod("platform", KonanTarget::class.java)
         val platformInstance = platformMethod.invoke(blindDelegate, target)
         val clangArgsInstance = platformInstance.javaClass.getDeclaredMethod("getClang").invoke(platformInstance)
-        val clangArgs = (clangArgsInstance.javaClass.getDeclaredMethod(methodName)
+        val clangArgs = (clangArgsInstance.javaClass.getMethod(methodName)
             .invoke(clangArgsInstance) as Array<String>).toList()
-//        println("clangArgs/$methodName [${clangArgs.joinToString()}]")
         return clangArgs
     }
 
@@ -62,7 +61,7 @@ class PlatformManager(dist: Distribution, konanHome:String) {
             val platformMethod = pmClass.getDeclaredMethod("getHostPlatform")
             val platformInstance = platformMethod.invoke(blindDelegate)
             val clangArgsInstance = platformInstance.javaClass.getDeclaredMethod("getClang").invoke(platformInstance)
-            return clangArgsInstance.javaClass.getDeclaredMethod("getClangPaths").invoke(clangArgsInstance) as List<String>
+            return clangArgsInstance.javaClass.getMethod("getClangPaths").invoke(clangArgsInstance) as List<String>
         }
 
     fun isEnabled(target: KonanTarget): Boolean {

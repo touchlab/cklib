@@ -11,31 +11,61 @@
 package co.touchlab.cklib.gradle
 
 import co.touchlab.cklib.gradle.reflection.PlatformManager
+import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.jetbrains.kotlin.konan.target.Distribution
 import org.jetbrains.kotlin.konan.target.HostManager
 import org.jetbrains.kotlin.konan.target.TargetSupportException
 import javax.inject.Inject
 
-open class CKlibGradleExtension @Inject constructor(val project: Project){
-    var konanHome: String = "${System.getProperty("user.home")}/.konan/kotlin-native-prebuilt-${simpleOsName}-x86_64-${GradleValues.KOTLIN_VERSION}"
-    var llvmHome: String = "${System.getProperty("user.home")}/.konan/dependencies/${llvmName}"
+open class CKlibGradleExtension @Inject constructor(val project: Project) {
+    private var _konanHome: String? = null
+    private var _llvmHome: String? = null
+
+    var kotlinVersion: String? = null
+    var arch: String = hostArch
+
+    var konanHome: String
+        get() = if (_konanHome == null) {
+            if(kotlinVersion == null){
+                throw GradleException("CKLib 'config.kotlinVersion' required. See https://github.com/touchlab/cklib")
+            }
+            "${System.getProperty("user.home")}/.konan/kotlin-native-prebuilt-${simpleOsName}-${arch}-${kotlinVersion}"
+        } else {
+            _konanHome!!
+        }
+        set(value) {
+            _konanHome = value
+        }
+
+    var llvmHome: String
+        get() = if (_llvmHome == null) {
+            "${System.getProperty("user.home")}/.konan/dependencies/${llvmName}"
+        } else {
+            _llvmHome!!
+        }
+        set(value) {
+            _llvmHome = value
+        }
 }
 
 internal val Project.platformManager: PlatformManager
     get() {
-        val cklibExtension = extensions.getByType(CKlibGradleExtension::class.java)
-        return PlatformManager(Distribution(cklibExtension.konanHome), cklibExtension.konanHome)
+        val cklibExtension = extensions.getByType(CompileToBitcodeExtension::class.java)
+        return PlatformManager(Distribution(cklibExtension.config.konanHome), cklibExtension.config.konanHome)
     }
 
 internal val Project.llvmHome: String
-    get() = extensions.getByType(CKlibGradleExtension::class.java).llvmHome
+    get() = extensions.getByType(CompileToBitcodeExtension::class.java).config.llvmHome
 
 internal val simpleOsName: String
     get() {
         val hostOs = HostManager.hostOs()
         return if (hostOs == "osx") "macos" else hostOs
     }
+
+internal val hostArch: String
+    get() = HostManager.hostArch()
 
 internal val osName: String
     get() {
