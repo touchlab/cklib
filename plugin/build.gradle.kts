@@ -17,6 +17,7 @@ val KOTLIN_VERSION: String by project
 dependencies {
   implementation(gradleApi())
   implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:$KOTLIN_VERSION")
+  implementation("org.rauschig:jarchivelib:1.2.0")
   implementation(kotlin("stdlib-jdk8"))
 }
 

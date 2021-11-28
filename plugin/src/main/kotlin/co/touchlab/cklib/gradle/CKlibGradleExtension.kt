@@ -21,31 +21,34 @@ import javax.inject.Inject
 open class CKlibGradleExtension @Inject constructor(val project: Project) {
     private var _konanHome: String? = null
     private var _llvmHome: String? = null
+    private var _llvmDir: String? = null
 
     var kotlinVersion: String? = null
     var arch: String = hostArch
 
-    var konanHome: String
-        get() = if (_konanHome == null) {
-            if(kotlinVersion == null){
-                throw GradleException("CKLib 'config.kotlinVersion' required. See https://github.com/touchlab/cklib")
-            }
-            "${System.getProperty("user.home")}/.konan/kotlin-native-prebuilt-${simpleOsName}-${arch}-${kotlinVersion}"
-        } else {
-            _konanHome!!
+    private fun makeKonanHome(): String {
+        if (kotlinVersion == null) {
+            throw GradleException("CKLib 'config.kotlinVersion' required. See https://github.com/touchlab/cklib")
         }
+        return "${System.getProperty("user.home")}/.konan/kotlin-native-prebuilt-${simpleOsName}-${arch}-${kotlinVersion}"
+    }
+
+    var konanHome: String
+        get() = _konanHome ?: makeKonanHome()
         set(value) {
             _konanHome = value
         }
 
     var llvmHome: String
-        get() = if (_llvmHome == null) {
-            "${System.getProperty("user.home")}/.konan/dependencies/${llvmName}"
-        } else {
-            _llvmHome!!
-        }
+        get() = _llvmHome ?: "${System.getProperty("user.home")}/.konan/dependencies/${llvmDir}"
         set(value) {
             _llvmHome = value
+        }
+
+    var llvmDir: String
+        get() = _llvmDir ?: llvmName
+        set(value) {
+            _llvmDir = value
         }
 }
 

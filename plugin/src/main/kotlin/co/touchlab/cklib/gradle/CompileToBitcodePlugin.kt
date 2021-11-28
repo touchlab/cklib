@@ -13,10 +13,18 @@ package co.touchlab.cklib.gradle
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.rauschig.jarchivelib.ArchiveFormat
+import org.rauschig.jarchivelib.ArchiverFactory
+import java.io.BufferedInputStream
+import java.io.File
+import java.io.FileOutputStream
+import java.net.URL
+import java.util.*
 
 class CompileToBitcodePlugin : Plugin<Project> {
     override fun apply(target: Project) = with(target) {
         extensions.create(EXTENSION_NAME, CompileToBitcodeExtension::class.java, target)
+        downloadIfNeeded()
 
         target.pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform"){ appliedPlugin ->
             extensions.getByType(KotlinMultiplatformExtension::class.java)
@@ -32,6 +40,32 @@ class CompileToBitcodePlugin : Plugin<Project> {
                 COMPILATION_DATABASE_TASK_NAME
             )
         }*/
+    }
+
+    private fun downloadIfNeeded() {
+        val cklibDir = File("${System.getProperty("user.home")}/.cklib")
+        val localFile = File(cklibDir, "clang-llvm-apple-8.0.0-darwin-macos")
+        val clangExists = localFile.exists()
+        if(!clangExists){
+            cklibDir.mkdirs()
+            val tempFileName = UUID.randomUUID().toString()
+            val tempDl = File(cklibDir, "${tempFileName}.tar.gz")
+            try {
+                val fos = FileOutputStream(tempDl)
+                val inp = BufferedInputStream(URL("https://touchlab-deps-public.s3.us-east-2.amazonaws.com/clang-llvm-apple-8.0.0-darwin-macos.tar.gz").openStream())
+                inp.copyTo(fos)
+                fos.close()
+                inp.close()
+
+                val archiver = ArchiverFactory.createArchiver(ArchiveFormat.TAR)
+
+                val extractDir = File(cklibDir, tempFileName)
+                archiver.extract(tempDl, extractDir)
+                extractDir.renameTo(localFile)
+            } finally {
+                tempDl.delete()
+            }
+        }
     }
 
     companion object {
