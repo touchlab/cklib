@@ -21,7 +21,6 @@ import javax.inject.Inject
 open class CKlibGradleExtension @Inject constructor(val project: Project) {
     private var _konanHome: String? = null
     private var _llvmHome: String? = null
-    private var _llvmDir: String? = null
 
     var kotlinVersion: String? = null
     var arch: String = hostArch
@@ -40,15 +39,9 @@ open class CKlibGradleExtension @Inject constructor(val project: Project) {
         }
 
     var llvmHome: String
-        get() = _llvmHome ?: "${System.getProperty("user.home")}/.konan/dependencies/${llvmDir}"
+        get() = _llvmHome ?: "${System.getProperty("user.home")}/.cklib/clang-llvm-apple-8.0.0-darwin-macos"
         set(value) {
             _llvmHome = value
-        }
-
-    var llvmDir: String
-        get() = _llvmDir ?: llvmName
-        set(value) {
-            _llvmDir = value
         }
 }
 
