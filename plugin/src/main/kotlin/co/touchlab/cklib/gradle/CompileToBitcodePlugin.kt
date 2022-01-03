@@ -10,11 +10,10 @@
 
 package co.touchlab.cklib.gradle
 
+import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import org.rauschig.jarchivelib.ArchiveFormat
-import org.rauschig.jarchivelib.ArchiverFactory
 import java.io.BufferedInputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -23,6 +22,9 @@ import java.util.*
 
 class CompileToBitcodePlugin : Plugin<Project> {
     override fun apply(target: Project) = with(target) {
+        if (osName == "windows") {
+            throw GradleException("Windows is currently not compatible with cklib")
+        }
         extensions.create(EXTENSION_NAME, CompileToBitcodeExtension::class.java, target)
         downloadIfNeeded(target)
 
@@ -45,31 +47,31 @@ class CompileToBitcodePlugin : Plugin<Project> {
     //This is pretty hacky, but the process changed in 1.6.0. We'll probably just split off and do our own thing
     //going forward, but need to be able to build for the next few weeks.
     private fun downloadIfNeeded(target: Project) {
-        val cklibDir = File("${System.getProperty("user.home")}/.cklib")
-        val localFile = File(cklibDir, "clang-llvm-apple-8.0.0-darwin-macos")
+        val cklibDir = File(defaultCklibDir)
+        val localFile = File(cklibDir, llvmName)
         val clangExists = localFile.exists()
         if(!clangExists){
             target.logger.info("cklib downloading dependencies (may take a while...)")
             cklibDir.mkdirs()
             val tempFileName = UUID.randomUUID().toString()
-            val extractDir = File(cklibDir, tempFileName)
-            val tempDl = File(cklibDir, "${tempFileName}.zip")
+            val tempFileNameWithExtension = "${tempFileName}.tar.gz"
+            val tempDl = File(cklibDir, tempFileNameWithExtension)
 
             try {
                 val fos = FileOutputStream(tempDl)
-                val inp = BufferedInputStream(URL("https://touchlab-deps-public.s3.us-east-2.amazonaws.com/clang-llvm-apple-8.0.0-darwin-macos.zip").openStream())
+
+                val inp = BufferedInputStream(URL("https://download.jetbrains.com/kotlin/native/${llvmName}.tar.gz").openStream())
                 inp.copyTo(fos)
                 fos.close()
                 inp.close()
 
-                val archiver = ArchiverFactory.createArchiver(ArchiveFormat.ZIP)
-
-                archiver.extract(tempDl, extractDir)
-                val extractChild = File(extractDir, "clang-llvm-apple-8.0.0-darwin-macos")
-                extractChild.renameTo(localFile)
+                target.exec {
+                    it.workingDir = cklibDir.absoluteFile
+                    it.executable = "tar"
+                    it.args = listOf("-xf", tempFileNameWithExtension)
+                }
             } finally {
                 tempDl.delete()
-                extractDir.delete()
             }
         }
     }
