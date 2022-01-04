@@ -2,13 +2,34 @@
 
 CKlib is a gradle plugin that will build and package C/C++/Objective-C code for Kotlin/Native.
 
+# Usage
+
+Add gradle plugins
+
+```kotlin
+plugins {
+    kotlin("multiplatform")
+    id("co.touchlab.cklib")
+}
+```
+
+Add Kotlin version and define some C-like source:
+
+```kotlin
+cklib {
+    config.kotlinVersion = KOTLIN_VERSION
+    create("objcsample") {
+        language = Language.OBJC
+    }
+}
+```
+
+See example in [Kermit](https://github.com/touchlab/Kermit/blob/main/kermit-crashlytics-test/build.gradle.kts#L69)
+
 # Note
 
-The main Kotlin project has changed how locally embedded C-like code is included in libraries, so we'll probably remove
-this project from public access soon until we land on a complete answer to handling this (our current solution is kind 
-of a copy/paste of the main Kotlin solution).
-
-You can use this, but we won't be supporting it publicly as it's kind of brittle to set up and debug. Just FYI.
+The main Kotlin project has changed how locally embedded C-like code is included in libraries. Use 
+this project if you'd like, but outside of private projects we won't really be supporting it much.
 
 License
 =======
