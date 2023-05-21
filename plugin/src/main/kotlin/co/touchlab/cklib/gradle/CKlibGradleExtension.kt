@@ -92,7 +92,7 @@ internal val llvmName: String
     }
 
 //https://download.jetbrains.com/kotlin/native/clang-llvm-8.0.0-linux-x86-64.tar.gz
-internal val llvm_linux_x64 = "clang-llvm-8.0.0-linux-x86-64"
-internal val llvm_mingw_x64 = "msys2-mingw-w64-x86_64-clang-llvm-lld-compiler_rt-8.0.1"
-internal val llvm_macos_x64 = "clang-llvm-apple-8.0.0-darwin-macos"
-internal val llvm_macos_arm64 = "clang-llvm-apple-8.0.0-darwin-macos-aarch64"
+internal val llvm_linux_x64 = "llvm-11.1.0-linux-x64-2"
+internal val llvm_mingw_x64 = "llvm-11.1.0-windows-x64-2"
+internal val llvm_macos_x64 = "apple-llvm-20200714-macos-x64-1"
+internal val llvm_macos_arm64 = "apple-llvm-20200714-macos-aarch64-1"
