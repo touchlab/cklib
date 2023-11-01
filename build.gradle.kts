@@ -13,16 +13,17 @@
 
 buildscript {
     extra["kotlin_plugin_id"] = "co.touchlab.cklib"
-    dependencies {
-        classpath("com.vanniktech:gradle-maven-publish-plugin:0.18.0")
-    }
 }
 
 plugins {
-    id("com.github.gmazzo.buildconfig") version "2.1.0" apply false
+
+    id("com.github.gmazzo.buildconfig") version "4.1.2" apply false
+    id("com.vanniktech.maven.publish") version "0.25.3" apply false
+    alias(libs.plugins.kotlin.jvm) apply false
 }
 
 val GROUP: String by project
+
 val CKLIB_VERSION: String by project
 
 allprojects {
