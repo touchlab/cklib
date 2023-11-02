@@ -4,7 +4,7 @@ plugins {
   id("java-gradle-plugin")
   kotlin("jvm")
   id("com.github.gmazzo.buildconfig")
-  id("com.vanniktech.maven.publish")
+  id("com.vanniktech.maven.publish.base")
 }
 
 kotlin {
@@ -37,4 +37,11 @@ gradlePlugin {
 }
 repositories {
   mavenCentral()
+}
+mavenPublishing {
+  publishToMavenCentral()
+  val releaseSigningEnabled =
+    project.properties["RELEASE_SIGNING_ENABLED"]?.toString()?.equals("false", ignoreCase = true) != true
+  if (releaseSigningEnabled) signAllPublications()
+  pomFromGradleProperties()
 }
