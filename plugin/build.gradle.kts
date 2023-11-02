@@ -5,6 +5,7 @@ plugins {
   kotlin("jvm")
   id("com.github.gmazzo.buildconfig")
   id("com.vanniktech.maven.publish.base")
+  id("com.gradle.plugin-publish") version "1.2.1"
 }
 
 kotlin {
