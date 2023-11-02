@@ -7,18 +7,14 @@ plugins {
   id("com.vanniktech.maven.publish")
 }
 
-java {
-  sourceCompatibility = JavaVersion.VERSION_1_8
-  targetCompatibility = JavaVersion.VERSION_1_8
+kotlin {
+  jvmToolchain(11)
 }
-
-val KOTLIN_VERSION: String by project
 
 dependencies {
   implementation(gradleApi())
-  implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:$KOTLIN_VERSION")
-  implementation("org.rauschig:jarchivelib:1.2.0")
-  implementation(kotlin("stdlib-jdk8"))
+  implementation(libs.kotlin.gradle.plugin)
+  implementation(kotlin("stdlib"))
 }
 
 buildConfig {
@@ -41,12 +37,4 @@ gradlePlugin {
 }
 repositories {
   mavenCentral()
-}
-val compileKotlin: KotlinCompile by tasks
-compileKotlin.kotlinOptions {
-  jvmTarget = "1.8"
-}
-val compileTestKotlin: KotlinCompile by tasks
-compileTestKotlin.kotlinOptions {
-  jvmTarget = "1.8"
 }
