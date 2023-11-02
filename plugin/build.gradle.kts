@@ -11,11 +11,9 @@ kotlin {
   jvmToolchain(11)
 }
 
-val KOTLIN_VERSION: String by project
-
 dependencies {
   implementation(gradleApi())
-  implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:$KOTLIN_VERSION")
+  implementation(libs.kotlin.gradle.plugin)
   implementation(kotlin("stdlib"))
 }
 
