@@ -91,6 +91,12 @@ internal val llvmName: String
         }
     }
 
+internal val archiveType: String
+    get() = when (osName) {
+      "windows" -> "zip"
+      else -> "tar.gz"
+    }
+
 //https://download.jetbrains.com/kotlin/native/apple-llvm-20200714-macos-aarch64-1.tar.gz
 internal val llvm_linux_x64 = "llvm-11.1.0-linux-x64-2"
 internal val llvm_mingw_x64 = "llvm-11.1.0-windows-x64-2"
