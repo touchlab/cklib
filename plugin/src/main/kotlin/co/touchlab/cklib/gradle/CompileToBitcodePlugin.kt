@@ -22,9 +22,6 @@ import java.util.*
 
 class CompileToBitcodePlugin : Plugin<Project> {
     override fun apply(target: Project) = with(target) {
-        if (osName == "windows") {
-            throw GradleException("Windows is currently not compatible with cklib")
-        }
         extensions.create(EXTENSION_NAME, CompileToBitcodeExtension::class.java, target)
         downloadIfNeeded(target)
 
@@ -60,7 +57,7 @@ class CompileToBitcodePlugin : Plugin<Project> {
             try {
                 val fos = FileOutputStream(tempDl)
 
-                val inp = BufferedInputStream(URL("https://download.jetbrains.com/kotlin/native/${llvmName}.tar.gz").openStream())
+                val inp = BufferedInputStream(URL("https://download.jetbrains.com/kotlin/native/${llvmName}.${archiveType}").openStream())
                 inp.copyTo(fos)
                 fos.close()
                 inp.close()
