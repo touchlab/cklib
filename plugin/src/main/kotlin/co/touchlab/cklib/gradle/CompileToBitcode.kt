@@ -20,7 +20,8 @@ import javax.inject.Inject
 open class CompileToBitcode @Inject constructor(
     srcRoot: File,
     @Input val compileName: String,
-    @Input val target: String
+    @Input val target: String,
+    val enabled: ()->Boolean
 ) : DefaultTask() {
 
     enum class Language {
@@ -179,6 +180,9 @@ open class CompileToBitcode @Inject constructor(
 
     @TaskAction
     fun compile() {
+        if(!enabled()){
+            return
+        }
         objDir.mkdirs()
 
         val plugin = ExecClang(project)

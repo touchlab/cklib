@@ -32,18 +32,21 @@ open class CompileToBitcodeExtension @Inject constructor(val project: Project) {
             it.description = "Compiles '$name' to bitcode for all targets"
         }.get()
 
-        val allTaskProviders = kmpExt.kotlinNativeTargets.filter { project.platformManager.isEnabled(it.konanTarget) }.map { knTarget ->
+        val allTaskProviders = kmpExt.kotlinNativeTargets.map { knTarget ->
+
+            val compileKotlinTask = project.tasks.getByPath("compileKotlin${knTarget.name.capitalize()}")
 
             val taskName = "${knTarget.name}${name.snakeCaseToCamelCase().capitalize()}"
 
             val taskProvider = project.tasks.register(
                 taskName,
                 CompileToBitcode::class.java,
-                srcDir, name, knTarget.konanTarget.name
+                srcDir, name, knTarget.konanTarget.name, { project.platformManager.isEnabled(knTarget.konanTarget) }
             )
 
             //tasks.getByName("compileKotlin${targetName.capitalize()}").dependsOn("${it.second}Quickjs")
-            project.tasks.getByPath("compileKotlin${knTarget.name.capitalize()}")
+
+            compileKotlinTask
                 .dependsOn(taskName)
 
             taskProvider.configure { compileToBitcodeTask ->

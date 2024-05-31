@@ -10,6 +10,7 @@
 
 package co.touchlab.cklib.gradle.reflection
 
+import org.jetbrains.kotlin.konan.target.Distribution
 import org.jetbrains.kotlin.konan.target.KonanTarget
 import java.io.File
 import java.net.URLClassLoader
@@ -17,7 +18,7 @@ import java.net.URLClassLoader
 /**
  * Use reflection to grab what we want from the konan distribution
  */
-class PlatformManager(konanHome: String) {
+class PlatformManager(dist: Distribution, konanHome:String) {
     private val kotlinNativeJar = "${konanHome}/konan/lib/kotlin-native.jar"
     private val pmClass:Class<*>
     private val blindDelegate:Any
@@ -26,8 +27,8 @@ class PlatformManager(konanHome: String) {
         val child = URLClassLoader(arrayOf(File(kotlinNativeJar).toURL()), this.javaClass.classLoader)
         pmClass = Class.forName("org.jetbrains.kotlin.konan.target.PlatformManager", true, child)
         blindDelegate = pmClass.declaredConstructors.find {
-            it.parameters.size == 2 && it.parameters[1].type == String::class.java
-        }!!.newInstance(konanHome, null)
+            it.parameters.size == 2 && it.parameters[0].type == Distribution::class.java
+        }!!.newInstance(dist, false)
     }
 
     //targetManager(targetName).target

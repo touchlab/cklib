@@ -13,6 +13,7 @@ package co.touchlab.cklib.gradle
 import co.touchlab.cklib.gradle.reflection.PlatformManager
 import org.gradle.api.GradleException
 import org.gradle.api.Project
+import org.jetbrains.kotlin.konan.target.Distribution
 import org.jetbrains.kotlin.konan.target.HostManager
 import org.jetbrains.kotlin.konan.target.TargetSupportException
 import javax.inject.Inject
@@ -50,7 +51,7 @@ get() = "${System.getProperty("user.home")}/.cklib"
 internal val Project.platformManager: PlatformManager
     get() {
         val cklibExtension = extensions.getByType(CompileToBitcodeExtension::class.java)
-        return PlatformManager(cklibExtension.config.konanHome)
+        return PlatformManager(Distribution(cklibExtension.config.konanHome), cklibExtension.config.konanHome)
     }
 
 internal val Project.llvmHome: String
