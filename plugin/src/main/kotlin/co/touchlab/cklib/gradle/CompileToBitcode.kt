@@ -14,6 +14,7 @@ import co.touchlab.cklib.gradle.CompileToBitcodePlugin.Companion.PLUGIN_NAME
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.FileCollection
 import org.gradle.api.tasks.*
+import org.gradle.process.ExecOperations
 import java.io.File
 import javax.inject.Inject
 
@@ -21,7 +22,8 @@ open class CompileToBitcode @Inject constructor(
     srcRoot: File,
     @Input val compileName: String,
     @Input val target: String,
-    val enabled: ()->Boolean
+    val enabled: ()->Boolean,
+    private val execOperations: ExecOperations,
 ) : DefaultTask() {
 
     enum class Language {
@@ -185,14 +187,14 @@ open class CompileToBitcode @Inject constructor(
         }
         objDir.mkdirs()
 
-        val plugin = ExecClang(project)
+        val plugin = ExecClang(project, execOperations)
         plugin.execKonanClang(target) {
             it.workingDir = objDir
             it.executable = executable
             it.args = compilerFlags + inputFiles.map { it.absolutePath }
         }
 
-        project.exec {
+        execOperations.exec {
 
 //            val llvmDir = platformManager.hostPlatform.llvmHome//"abc"///*platformManager.hostPlatform.llvmHome*/project.findProperty("llvmDir")
             val llvmDir = project.llvmHome

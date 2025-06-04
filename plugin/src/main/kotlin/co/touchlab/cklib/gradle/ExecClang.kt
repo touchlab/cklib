@@ -13,11 +13,15 @@ package co.touchlab.cklib.gradle
 import org.gradle.api.Action
 import org.gradle.api.GradleException
 import org.gradle.api.Project
+import org.gradle.process.ExecOperations
 import org.gradle.process.ExecResult
 import org.gradle.process.ExecSpec
 import java.io.File
 
-class ExecClang(private val project: Project) {
+class ExecClang(
+    private val project: Project,
+    private val execOperations: ExecOperations,
+) {
 
     private val platformManager = project.platformManager
 
@@ -60,6 +64,6 @@ class ExecClang(private val project: Project) {
                     File.pathSeparator + it.environment["PATH"]
             it.args = it.args + defaultArgs
         }
-        return project.exec(extendedAction)
+        return execOperations.exec(extendedAction)
     }
 }
