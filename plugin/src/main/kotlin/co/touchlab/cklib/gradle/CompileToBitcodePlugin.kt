@@ -10,17 +10,20 @@
 
 package co.touchlab.cklib.gradle
 
-import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.process.ExecOperations
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import java.io.BufferedInputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.net.URL
 import java.util.*
+import javax.inject.Inject
 
-class CompileToBitcodePlugin : Plugin<Project> {
+class CompileToBitcodePlugin @Inject constructor(
+    private val execOperations: ExecOperations,
+) : Plugin<Project> {
     override fun apply(target: Project) = with(target) {
         extensions.create(EXTENSION_NAME, CompileToBitcodeExtension::class.java, target)
         downloadIfNeeded(target)
@@ -62,7 +65,7 @@ class CompileToBitcodePlugin : Plugin<Project> {
                 fos.close()
                 inp.close()
 
-                target.exec {
+                execOperations.exec {
                     it.workingDir = cklibDir.absoluteFile
                     it.executable = "tar"
                     it.args = listOf("-xf", tempFileNameWithExtension)
