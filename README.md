@@ -26,6 +26,21 @@ cklib {
 
 See example in [Kermit](https://github.com/touchlab/Kermit/blob/main/kermit-crashlytics-test/build.gradle.kts#L69)
 
+Configuring custom C Standard and llvmHome.
+```kotlin
+cklib {
+    config.kotlinVersion = KOTLIN_VERSION
+    config.llvmHome = "Absolute path to your local llvmHome version"
+    create("csample") {
+        language = Language.C
+        cStandard = "gnu23"
+    }
+}
+```
+
+- Default `cStandard`: `gnu11`
+- Default `cppStandard`: `c++17`
+
 # Note
 
 The main Kotlin project has changed how locally embedded C-like code is included in libraries. Use 

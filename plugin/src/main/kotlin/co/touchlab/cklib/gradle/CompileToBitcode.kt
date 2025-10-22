@@ -64,6 +64,12 @@ open class CompileToBitcode @Inject constructor(
     @Input
     var language = Language.CPP
 
+    @get:Input
+    var cStandard = "gnu11"
+
+    @get:Input
+    var cppStandard = "c++17"
+
     @get:Internal
     internal val targetDir: File
         get() {
@@ -91,15 +97,15 @@ open class CompileToBitcode @Inject constructor(
             val languageFlags = when (language) {
                 Language.C ->
                     // Used flags provided by original build of allocator C code.
-                    listOf("-std=gnu11", "-O3", "-Wall", "-Wextra", "-Werror")
+                    listOf("-std=$cStandard", "-O3", "-Wall", "-Wextra", "-Werror")
                 Language.CPP ->
-                    listOfNotNull("-std=c++17", "-Werror", "-O2",
+                    listOfNotNull("-std=$cppStandard", "-Werror", "-O2",
                         "-Wall", "-Wextra",
                         "-Wno-unused-parameter"  // False positives with polymorphic functions.
                     )
                 Language.OBJC ->
                     // Most of these flags are from Xcode building source. We *may* remove a lot of these eventually, but for now we'll be lazy
-                    listOf("-x", "objective-c", "-std=gnu11", "-fobjc-arc", "-fobjc-weak", //"-framework", "Foundation",// "-mmacosx-version-min=10.6",
+                    listOf("-x", "objective-c", "-std=$cStandard", "-fobjc-arc", "-fobjc-weak", //"-framework", "Foundation",// "-mmacosx-version-min=10.6",
                         "-ObjC",
 //                        "-fmodules", "-gmodules",
                             "-Wno-missing-field-initializers", "-Wno-missing-prototypes", "-Werror=return-type", "-Wdocumentation", "-Wunreachable-code",
