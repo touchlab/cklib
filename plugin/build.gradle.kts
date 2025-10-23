@@ -40,7 +40,7 @@ repositories {
   mavenCentral()
 }
 mavenPublishing {
-  publishToMavenCentral()
+  publishToMavenCentral(automaticRelease = true)
   val releaseSigningEnabled =
     project.properties["RELEASE_SIGNING_ENABLED"]?.toString()?.equals("false", ignoreCase = true) != true
   if (releaseSigningEnabled) signAllPublications()
