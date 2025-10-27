@@ -18,7 +18,7 @@ buildscript {
 plugins {
 
     id("com.github.gmazzo.buildconfig") version "4.1.2" apply false
-    id("com.vanniktech.maven.publish.base") version "0.25.3" apply false
+    id("com.vanniktech.maven.publish.base") version "0.34.0" apply false
     alias(libs.plugins.kotlin.jvm) apply false
 }
 
