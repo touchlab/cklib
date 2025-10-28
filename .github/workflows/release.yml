@@ -25,8 +25,8 @@ jobs:
           distribution: "adopt"
           java-version: "17"
 
-      - name: Finish Maven Central Release
-        run: ./gradlew closeAndReleaseRepository --no-daemon --stacktrace --no-build-cache
+      - name: Publish Artifacts to Maven Central
+        run: ./gradlew publish --no-daemon --stacktrace --no-build-cache
         env:
           ORG_GRADLE_PROJECT_SONATYPE_NEXUS_USERNAME: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
