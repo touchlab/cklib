@@ -2,7 +2,6 @@
 
 CKlib is a gradle plugin that will build and package C/C++/Objective-C code for Kotlin/Native.
 
-> **Note:** The main Kotlin project has changed how locally embedded C-like code is included in libraries. Use this project if you'd like, but outside of private projects we won't really be supporting it much.
 ## Usage
 
 Add gradle plugins
