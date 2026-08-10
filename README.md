@@ -2,7 +2,8 @@
 
 CKlib is a gradle plugin that will build and package C/C++/Objective-C code for Kotlin/Native.
 
-# Usage
+> **Note:** The main Kotlin project has changed how locally embedded C-like code is included in libraries. Use this project if you'd like, but outside of private projects we won't really be supporting it much.
+## Usage
 
 Add gradle plugins
 
@@ -24,7 +25,7 @@ cklib {
 }
 ```
 
-See example in [Kermit](https://github.com/touchlab/Kermit/blob/main/kermit-crashlytics-test/build.gradle.kts#L69)
+## Configuration
 
 Configuring custom C Standard and llvmHome.
 ```kotlin
@@ -41,10 +42,15 @@ cklib {
 - Default `cStandard`: `gnu11`
 - Default `cppStandard`: `c++17`
 
-# Note
+## Examples
 
-The main Kotlin project has changed how locally embedded C-like code is included in libraries. Use 
-this project if you'd like, but outside of private projects we won't really be supporting it much.
+You can find a [tutorial](https://hackernoon.com/how-to-extend-a-kmm-shared-module-with-cc-code) with a [GitHub Sample](https://github.com/ttypic/kmm-embedded-c) to get a brief understanding of how the library works.
+
+Additionally you can see multiple examples of C Klib in use here:
+1. [zstd-kmp](https://github.com/square/zstd-kmp) - Packages [ztsd](https://github.com/facebook/zstd), a fast real-time compression algorithm.
+1. [Zipline](https://github.com/cashapp/zipline) - Packages [QuickJS](https://bellard.org/quickjs/), a small and embeddable Javascript engine.
+
+
 
 License
 =======
