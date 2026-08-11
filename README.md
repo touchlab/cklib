@@ -43,9 +43,9 @@ cklib {
 
 ## Examples
 
-[`sample/`](sample) is a runnable build in this repo. It vendors [Monocypher](https://monocypher.org), compiles it with CKlib, binds it with cinterop, and exposes a passphrase-encrypted note API. Run it with `./gradlew -p sample macosArm64Test`. See [sample/README.md](sample/README.md).
+[`sample/`](sample) is a small sample that packages [Monocypher](https://monocypher.org), compiles it with CKlib, binds it with cinterop, and exposes a passphrase-encrypted note API.
 
-You can find a [tutorial](https://hackernoon.com/how-to-extend-a-kmm-shared-module-with-cc-code) with a [GitHub Sample](https://github.com/ttypic/kmm-embedded-c) to get a brief understanding of how the library works.
+You can also find a [tutorial](https://hackernoon.com/how-to-extend-a-kmm-shared-module-with-cc-code) with a [GitHub Sample](https://github.com/ttypic/kmm-embedded-c) to get a brief understanding of how the library works.
 
 Additionally you can see multiple examples of C Klib in use here:
 1. [zstd-kmp](https://github.com/square/zstd-kmp) - Packages [ztsd](https://github.com/facebook/zstd), a fast real-time compression algorithm.
