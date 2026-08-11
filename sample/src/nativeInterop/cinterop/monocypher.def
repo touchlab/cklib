@@ -1,0 +1,16 @@
+package = co.touchlab.cklib.sample.cinterop
+
+headers = monocypher.h secure_random.h
+
+# Only generate bindings for these two headers; without the filter every transitively included
+# system header (stdint.h, stddef.h, ...) ends up in the generated package as well.
+headerFilter = monocypher.h secure_random.h
+
+# Header search path, relative to the Gradle project directory (that is cinterop's working
+# directory). This line alone is enough to resolve the headers; build.gradle.kts additionally
+# passes the same directory via `includeDirs(...)`, which does not depend on the working directory.
+compilerOpts = -Isrc/monocypher/headers
+
+# Deliberately no `staticLibraries` and no `libraryPaths`: cinterop only reads the headers here.
+# The machine code comes from cklib, which compiles the .c files to LLVM bitcode and passes the
+# result to the Kotlin/Native compiler with -native-library.

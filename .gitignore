@@ -16,6 +16,9 @@ gen/
 .gradle/
 build/
 
+ # Kotlin
+.kotlin/
+
 local.properties
 
 Pods
