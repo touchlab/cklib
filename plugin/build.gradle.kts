@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
   id("java-gradle-plugin")
   kotlin("jvm")
@@ -9,7 +7,7 @@ plugins {
 }
 
 kotlin {
-  jvmToolchain(11)
+  jvmToolchain(17)
 }
 
 dependencies {
@@ -42,7 +40,7 @@ repositories {
 mavenPublishing {
   publishToMavenCentral(automaticRelease = true)
   val releaseSigningEnabled =
-    project.properties["RELEASE_SIGNING_ENABLED"]?.toString()?.equals("false", ignoreCase = true) != true
+    findProperty("RELEASE_SIGNING_ENABLED")?.toString()?.equals("false", ignoreCase = true) != true
   if (releaseSigningEnabled) signAllPublications()
   pomFromGradleProperties()
 }

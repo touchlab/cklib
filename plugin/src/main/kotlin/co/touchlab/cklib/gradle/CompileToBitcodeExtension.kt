@@ -27,16 +27,16 @@ open class CompileToBitcodeExtension @Inject constructor(val project: Project) {
     ) {
         val kmpExt = project.kmpExt
 
-        val allBitcode = project.tasks.register("all${name.snakeCaseToCamelCase().capitalize()}") {
+        val allBitcode = project.tasks.register("all${name.snakeCaseToCamelCase().capitalized()}") {
             it.group = GROUP_NAME
             it.description = "Compiles '$name' to bitcode for all targets"
         }.get()
 
         val allTaskProviders = kmpExt.kotlinNativeTargets.map { knTarget ->
 
-            val compileKotlinTask = project.tasks.getByPath("compileKotlin${knTarget.name.capitalize()}")
+            val compileKotlinTask = project.tasks.getByPath("compileKotlin${knTarget.name.capitalized()}")
 
-            val taskName = "${knTarget.name}${name.snakeCaseToCamelCase().capitalize()}"
+            val taskName = "${knTarget.name}${name.snakeCaseToCamelCase().capitalized()}"
 
             val taskProvider = project.tasks.register(
                 taskName,
@@ -44,22 +44,27 @@ open class CompileToBitcodeExtension @Inject constructor(val project: Project) {
                 srcDir, name, knTarget.konanTarget.name, { project.platformManager.isEnabled(knTarget.konanTarget) }
             )
 
-            //tasks.getByName("compileKotlin${targetName.capitalize()}").dependsOn("${it.second}Quickjs")
+            compileKotlinTask.dependsOn(taskName)
 
-            compileKotlinTask
-                .dependsOn(taskName)
+            val bitcodeFile = project.layout.buildDirectory
+                .file("${CompileToBitcodePlugin.PLUGIN_NAME}/$name/${knTarget.konanTarget.name}/$name.bc")
+            val nativeLibraryArgs = bitcodeFile.map { listOf("-native-library", it.asFile.absolutePath) }
+
+            compilations.forEach { compilation ->
+                @Suppress("DEPRECATION")
+                knTarget.compilations.getByName(compilation)
+                    .compilerOptions.options.freeCompilerArgs.addAll(nativeLibraryArgs)
+            }
+
+            knTarget.binaries.configureEach { binary ->
+                binary.linkTaskProvider.configure { linkTask ->
+                    linkTask.toolOptions.freeCompilerArgs.addAll(nativeLibraryArgs)
+                }
+            }
 
             taskProvider.configure { compileToBitcodeTask ->
                 compileToBitcodeTask.group = GROUP_NAME
                 compileToBitcodeTask.description = "Compiles '$name' to bitcode for ${knTarget.name}"
-
-                compilations.forEach { compilation ->
-                    val knCompilation = knTarget.compilations.getByName(compilation)
-
-                    knCompilation.kotlinOptions.freeCompilerArgs +=
-                        listOf("-native-library", compileToBitcodeTask.outFile.absolutePath)
-                }
-
                 compileToBitcodeTask.configurationBlock()
             }
 
@@ -70,7 +75,10 @@ open class CompileToBitcodeExtension @Inject constructor(val project: Project) {
 
     companion object {
         private fun String.snakeCaseToCamelCase() =
-            split('_').joinToString(separator = "") { it.capitalize() }
+            split('_').joinToString(separator = "") { it.capitalized() }
+
+        private fun String.capitalized(): String =
+            replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
 
         const val GROUP_NAME = CompileToBitcodePlugin.PLUGIN_NAME
     }

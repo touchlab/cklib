@@ -24,7 +24,7 @@ class PlatformManager(dist: Distribution, konanHome:String) {
     private val blindDelegate:Any
 
     init {
-        val child = URLClassLoader(arrayOf(File(kotlinNativeJar).toURL()), this.javaClass.classLoader)
+        val child = URLClassLoader(arrayOf(File(kotlinNativeJar).toURI().toURL()), this.javaClass.classLoader)
         pmClass = Class.forName("org.jetbrains.kotlin.konan.target.PlatformManager", true, child)
         blindDelegate = pmClass.declaredConstructors.find {
             it.parameters.size == 2 && it.parameters[0].type == Distribution::class.java

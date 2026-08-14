@@ -14,7 +14,7 @@
 import co.touchlab.cklib.gradle.CompileToBitcode
 
 plugins {
-    kotlin("multiplatform") version "2.1.10"
+    kotlin("multiplatform") version "2.4.10"
     id("co.touchlab.cklib")
 }
 
@@ -36,7 +36,7 @@ kotlin {
     }
 
     sourceSets {
-        val commonTest by getting {
+        getByName("commonTest") {
             dependencies {
                 implementation(kotlin("test"))
             }
@@ -45,7 +45,7 @@ kotlin {
 }
 
 cklib {
-    config.kotlinVersion = "2.1.10"
+    config.kotlinVersion = "2.4.10"
 
     create("monocypher", srcDir = file("src/monocypher")) {
         language = CompileToBitcode.Language.C
