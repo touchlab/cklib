@@ -39,9 +39,9 @@ create("monocypher", srcDir = file("src/monocypher")) {
 }
 ```
 
-* **`mingwX64` is deliberately not declared: `secure_random.c` has no Windows branch, and adding one
+* **`mingwX64`** is deliberately not declared: `secure_random.c` has no Windows branch, and adding one
 means `BCryptGenRandom` plus linking `bcrypt.lib`.
-> 
+
 * **`Language.C` compiles with `-std=gnu11 -O3 -Wall -Wextra -Werror`, hardcoded.** The only escape
 hatch is `compilerArgs`, which is appended after those flags, so `-Wno-error=<specific>` works.
 This sample needs **no suppressions at all**: Monocypher 4.0.3 and `secure_random.c` both build
