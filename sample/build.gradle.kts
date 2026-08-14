@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Touchlab
+ * Copyright (c) 2026 Touchlab
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
  *
@@ -14,7 +14,7 @@
 import co.touchlab.cklib.gradle.CompileToBitcode
 
 plugins {
-    kotlin("multiplatform") version "2.0.0"
+    kotlin("multiplatform") version "2.1.10"
     id("co.touchlab.cklib")
 }
 
@@ -29,7 +29,6 @@ kotlin {
 
     nativeTargets.forEach { target ->
         target.compilations.getByName("main").cinterops.create("monocypher") {
-            defFile(project.file("src/nativeInterop/cinterop/monocypher.def"))
             // cinterop only needs the headers. The compiled code arrives as bitcode from cklib,
             // which is why the .def declares no staticLibraries or libraryPaths.
             includeDirs(project.file("src/monocypher/headers"))
@@ -46,7 +45,7 @@ kotlin {
 }
 
 cklib {
-    config.kotlinVersion = "2.0.0"
+    config.kotlinVersion = "2.1.10"
 
     create("monocypher", srcDir = file("src/monocypher")) {
         language = CompileToBitcode.Language.C
