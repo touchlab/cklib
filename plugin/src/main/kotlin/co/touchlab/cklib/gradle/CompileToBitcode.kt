@@ -15,11 +15,9 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.file.FileCollection
 import org.gradle.api.tasks.*
 import org.gradle.process.ExecOperations
-import org.gradle.work.DisableCachingByDefault
 import java.io.File
 import javax.inject.Inject
 
-@DisableCachingByDefault(because = "Invokes host clang and llvm-link with absolute toolchain paths")
 open class CompileToBitcode @Inject constructor(
     srcRoot: File,
     @Input val compileName: String,
@@ -58,11 +56,9 @@ open class CompileToBitcode @Inject constructor(
 
     // Source files and headers are registered as inputs by the `inputFiles` and `headers` properties.
     @InputFiles
-    @PathSensitive(PathSensitivity.RELATIVE)
     var srcDirs: FileCollection = project.files(srcRoot.resolve("cpp"))
 
     @InputFiles
-    @PathSensitive(PathSensitivity.RELATIVE)
     var headersDirs: FileCollection = srcDirs + project.files(srcRoot.resolve("headers"))
 
     @Input
@@ -77,7 +73,7 @@ open class CompileToBitcode @Inject constructor(
     @get:Internal
     internal val targetDir: File
         get() {
-            return project.layout.buildDirectory.get().asFile.resolve("$PLUGIN_NAME/$compileName/$target")
+            return project.buildDir.resolve("$PLUGIN_NAME/$compileName/$target")
         }
 
     @get:OutputDirectory
@@ -137,7 +133,6 @@ open class CompileToBitcode @Inject constructor(
 
     @get:SkipWhenEmpty
     @get:InputFiles
-    @get:PathSensitive(PathSensitivity.RELATIVE)
     val inputFiles: Iterable<File>
         get() {
             return srcDirs.flatMap { srcDir ->
@@ -152,7 +147,6 @@ open class CompileToBitcode @Inject constructor(
     private fun bitcodeFileForInputFile(file: File) = outputFileForInputFile(file, "bc")
 
     @get:InputFiles
-    @get:PathSensitive(PathSensitivity.RELATIVE)
     protected val headers: Iterable<File>
         get() {
             // Not using clang's -M* flags because there's a problem with our current include system:

@@ -22,8 +22,9 @@ plugins {
     alias(libs.plugins.kotlin.jvm) apply false
 }
 
-val GROUP = property("GROUP") as String
-val CKLIB_VERSION = property("CKLIB_VERSION") as String
+val GROUP: String by project
+
+val CKLIB_VERSION: String by project
 
 allprojects {
     group = GROUP
