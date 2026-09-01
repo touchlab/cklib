@@ -54,13 +54,5 @@ cklib {
         // Language.C, so point them at the real layout instead of naming a C folder "cpp".
         srcDirs = files("src/monocypher/c")
         headersDirs = files("src/monocypher/headers")
-
-        // No compilerArgs. Language.C compiles with a hardcoded
-        // `-std=gnu11 -O3 -Wall -Wextra -Werror`, and both Monocypher 4.0.3 and secure_random.c
-        // build clean under it, so no -Wno-error= escape hatch is needed.
-        // compilerArgs.addAll(
-        //     listOf(
-        //     )
-        // )
     }
 }
