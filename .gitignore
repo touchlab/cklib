@@ -7,14 +7,17 @@
 *.iml
 *.ipr
 
- # Generated files
+# Generated files
 bin/
 gen/
 
- # Gradle files
+# Gradle files
 .gradle
 .gradle/
 build/
+
+# Kotlin
+.kotlin/
 
 local.properties
 
